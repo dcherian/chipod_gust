@@ -25,9 +25,9 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 101.15; % exact value from calibration file
                         % (no sign changes!)
-   DeployDecl = 0; % at deployment location
+   DeployDecl = -1.12; % at deployment location
    CorvallisDecl = 15+44/60; % at corvallis
 
    % chipod location (positive North, East & Down)
@@ -94,18 +94,54 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         save(fid, 'head');
 
         % _____pitot calibrations______
-        % W.T  = [0 -0.003154669 0 0 0];
-        % W.Ps = [0 0 0 0 0]; % pressure sensor is bad; accounted for in offset
-        % W.Tilt = [0 0.000088684 0 0 0];
-        % W.Pd = [0 0.0003995 0 0 0]; %if slope>1 else W.Pd = [0 slope 0 0 0];
-        % assert(W.Pd(2) < 1, 'WPd(2) > 1 !');
-        % % offsets
+        fid = [basedir filesep 'calib' filesep 'header_p.mat'] ;
+        W.T  = [0 -0.003154669 0 0 0];
+        W.Ps = [0 0 0 0 0]; % pressure sensor is bad; accounted for in offset
+        W.Tilt = [0 0.000088684 0 0 0];
+        W.Pd = [0 0.0003995 0 0 0]; %if slope>1 else W.Pd = [0 slope 0 0 0];
+        assert(W.Pd(2) < 1, 'WPd(2) > 1 !');
+
+        % offsets
         % W.V0 = 0;
         % W.P0 = 0;
         % W.T0 = 0;
         % save header in proper destination
-        % fid = [basedir filesep 'calib' filesep 'header_p.mat'] ;
-        % save(fid, 'W');
+        fid = [basedir filesep 'calib' filesep 'header_p.mat'] ;
+        save(fid, 'W');
+
+        % % below is from sally's cali_chipod_rama13.m
+        % % saved here as backup
+        % % in this deployment, a lot of the header is incorrect.
+        % the data is recorded at 100 Hz for time and T1P and T2P
+        % the data is recorded at 50 Hz for T1, T2, AX, AY, AZ, W, WP, P
+        % the data is recorded at 5 Hz for CMP
+        % head.irep.T1P   = 20;
+        % head.irep.T1    = 10;
+        % head.irep.AX    = 10;
+        % head.irep.AY    = 10;
+        % head.irep.AZ    = 10;
+        % head.irep.W1    = 10;
+        % head.irep.W     = 10;
+        % head.irep.WP    = 10;
+        % head.irep.T2P   = 20;
+        % head.irep.T2    = 10;
+        % head.irep.P     = 10;
+        % head.irep.R2    = 10;
+        % head.irep.R3    = 10;
+        % head.irep.R4    = 1;
+        % head.irep.R1    = 1;
+        % head.irep.VA    = 1;
+        % head.irep.MK0   = 1;
+        % head.irep.MK1   = 1;
+        % head.irep.QUE   = 1;
+        % head.irep.VD    = 1;
+        % head.irep.CMP   = 1;
+        % head.irep.MK5   = 1;
+        % head.irep.MK6   = 1;
+        % head.oversample and samplerate are wrong too, but all the variables that
+        % we need are correct.
+        % head.oversample = [1 2 2 2 2 2 2 2 1 2 2 2 2 20 20 20 20 20 20 20 20 20 20];
+        % head.samplerate = [100 50 50 50 50 50 50 50 100 50 50 50 50 5 5 5 5 5 5 5 5 5 5];
 
     end
 
