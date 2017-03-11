@@ -16,7 +16,7 @@ close all;
    do_dTdz_m   = 0;     % generate dTdz_m.mat
    do_dTdz_i   = 0;     % generate dTdz_i.mat 
    use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
-
+   modify_header_info = 1; % fix header info in this file?
 
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
@@ -51,6 +51,83 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         % chipod location (positive North, East & Down)
         ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
     end
+
+%%%%%%%%%%%%%%% header data %%%%%%%%%%%%%%%%%%%%%%
+
+if modify_header_info
+    fid = [basedir filesep 'calib' filesep 'header.mat'] ;
+
+    % read raw-data
+    [~, head] = raw_load_chipod([rawdir fids{1}]);
+
+    % head.irep values from raw data appear to be crap.
+    % delete them so that I'm sure they're not being used.
+    % johannes says the RAMA deployment is on standardized smapling
+    % frequencies, so the code automagically makes the right
+    % choice.
+    head.irep = [];
+
+    % fix compass offset + declination
+    % this is *only* used in chi_calibrate_chipod.m
+    % Compass is calibrated to true N in Corvallis
+    % Corvallis declination is 15° 44' °E in 2013.
+    % (not sure that this is relevant).
+    % https://www.ngdc.noaa.gov/geomag-web/#declination
+    % RAMA13 (SJW) declination at 12N, 90E is 1.12°W
+    head.coef.CMP(1) = -101.15  + 1.12;
+
+    % save header in proper destination
+    save(fid, 'head');
+
+    %________________ pitot calibrations __________________
+    fid = [basedir filesep 'calib' filesep 'header_p.mat'] ;
+    W.T  = [0 -0.003154669 0 0 0];
+    W.Ps = [0 0 0 0 0]; % pressure sensor is bad; accounted for in offset
+    W.Tilt = [0 0.000088684 0 0 0];
+    W.Pd = [0 0.0003995 0 0 0]; %if slope>1 else W.Pd = [0 slope 0 0 0];
+    assert(W.Pd(2) < 1, 'WPd(2) > 1 !');
+
+    % offsets
+    W.V0 = 0;
+    W.P0 = 0;
+    W.T0 = 0;
+
+    save(fid, 'W');
+
+    % % below is from sally's cali_chipod_rama13.m
+    % % saved here as backup
+    % % in this deployment, a lot of the header is incorrect.
+    % the data is recorded at 100 Hz for time and T1P and T2P
+    % the data is recorded at 50 Hz for T1, T2, AX, AY, AZ, W, WP, P
+    % the data is recorded at 5 Hz for CMP
+    % head.irep.T1P   = 20;
+    % head.irep.T1    = 10;
+    % head.irep.AX    = 10;
+    % head.irep.AY    = 10;
+    % head.irep.AZ    = 10;
+    % head.irep.W1    = 10;
+    % head.irep.W     = 10;
+    % head.irep.WP    = 10;
+    % head.irep.T2P   = 20;
+    % head.irep.T2    = 10;
+    % head.irep.P     = 10;
+    % head.irep.R2    = 10;
+    % head.irep.R3    = 10;
+    % head.irep.R4    = 1;
+    % head.irep.R1    = 1;
+    % head.irep.VA    = 1;
+    % head.irep.MK0   = 1;
+    % head.irep.MK1   = 1;
+    % head.irep.QUE   = 1;
+    % head.irep.VD    = 1;
+    % head.irep.CMP   = 1;
+    % head.irep.MK5   = 1;
+    % head.irep.MK6   = 1;
+    % head.oversample and samplerate are wrong too, but all the variables that
+    % we need are correct.
+    % head.oversample = [1 2 2 2 2 2 2 2 1 2 2 2 2 20 20 20 20 20 20 20 20 20 20];
+    % head.samplerate = [100 50 50 50 50 50 50 50 100 50 50 50 50 5 5 5 5 5 5 5 5 5 5];
+end
 
 %%%%%%%%%%%%%%%%%%% temp processing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 if do_temp
