@@ -11,12 +11,13 @@ close all;
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
    do_temp     = 0;     % generate temp.mat 
-   do_vel_p    = 0;     % generate vel_p.mat 
+   do_vel_p    = 0;     % generate vel_p.mat
    do_vel_m    = 0;     % generate vel_m.mat
-   do_dTdz_m   = 0;     % generate dTdz_m.mat
+   do_dTdz_m   = 1;     % generate dTdz_m.mat
    do_dTdz_i   = 0;     % generate dTdz_i.mat 
    use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
-   modify_header_info = 1; % fix header info in this file?
+   use_rama    = 1;     % use prelim processed RAMA data
+   modify_header_info = 0; % fix header info in this file?
 
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
@@ -32,25 +33,30 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    [fids, fdate] = chi_find_rawfiles(basedir);
 
 %_____________________for automated PMEL mooring processing____________
-    if use_pmel
-        pmeldir = '~/ganges/data/TaoTritonPirataRama/'; % directory with pmel mooring files
+   % chipod location (positive North, East & Down)
+   ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
+
+   if use_pmel
+       pmeldir = '~/TaoTritonPirataRama/'; % directory with pmel mooring files
                                             % (can obtain an updated copy from ganges)
-        % which high-freq data file should I use?
-        % 2m/10m/30m/hr
-        velfreq   = '30m';
-        Tfreq     = '10m';
-        Sfreq     = 'dy';
+       % which high-freq data file should I use?
+       % 2m/10m/30m/hr
+       velfreq = '30m';
+       Tfreq = '10m';
+       Sfreq = 'dy';
 
-        % find start and end of depoyment from raw files
-        rawdir       = [basedir filesep 'raw' filesep];
-        data         = raw_load_chipod([rawdir fids{1}]);
-        deployStart  = data.datenum(1);
-        data         = raw_load_chipod([rawdir fids{end}]);
-        deployEnd    = data.datenum(end);
+       % find start and end of depoyment from raw files
+       rawdir = [basedir filesep 'raw' filesep];
+       data = raw_load_chipod([rawdir fids{1}]);
+       deployStart = data.datenum(1);
+       data = raw_load_chipod([rawdir fids{end}]);
+       deployEnd = data.datenum(end);
+   end
 
-        % chipod location (positive North, East & Down)
-        ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
-    end
+   % use RAMA preliminary data
+   if use_rama
+       ramaname = '~/rama/RamaPrelimProcessed/RAMA13.mat';
+   end
 
 %%%%%%%%%%%%%%% header data %%%%%%%%%%%%%%%%%%%%%%
 
@@ -217,9 +223,15 @@ if do_dTdz_m
                                                       ChipodDepth, deployStart, ...
                                                       deployEnd, pmeldir, 'RAMA', ...
                                                       Tfreq, Sfreq);
+          save([basedir filesep 'proc' filesep 'T_m.mat'], ...
+                'T1', 'T2')
       end
 
- %_______ EXAMPLE________________
+      if use_rama
+          [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth);
+      end
+
+      %_______ EXAMPLE________________
       %  load('../../G002/proc/temp.mat') ; % surounding instruments
       %     T1.time = T.time; 
       %     T1.z    = nanmedian(T.depth); 
