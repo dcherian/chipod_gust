@@ -92,7 +92,7 @@ disp('merge all days')
    for i = 1:length(pflag.id)
          [id, ~, ~, ~] = pflag.get_id(i);
          if pflag.proc.(id) % check if flag is active 
-            disp([ id ' is merged '  ]);
+            disp([ id ' is being merged '  ]);
             ddir = ['chi' filesep 'chi_' id];
             chi_merge_and_avg(basedir, ddir, 60);
          end
@@ -100,7 +100,7 @@ disp('merge all days')
 
    % merge eps data
    if pflag.master.epsp
-      disp('Pitot epsilon data are merged')
+      disp('Pitot epsilon data are being merged')
       chi_merge_and_avg(basedir, 'eps', 60);
    end
 
