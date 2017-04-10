@@ -98,7 +98,7 @@ end
       save([basedir 'proc' filesep ddir '.mat'], char(Favg(1)), '-v7.3'); 
    elseif length(Favg)==2
       save([basedir 'proc' filesep ddir '.mat'], char(Favg(1)), char(Favg(2)), '-v7.3'); 
-   else length(Favg)==2
+   elseif length(Favg)==3
       save([basedir 'proc' filesep ddir '.mat'], char(Favg(1)), char(Favg(2)), char(Favg(3)), '-v7.3'); 
    end
 
