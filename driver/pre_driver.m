@@ -17,6 +17,9 @@ close all;
    do_dTdz_i   = 0;     % generate dTdz_i.mat 
    use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
    use_rama    = 1;     % use prelim processed RAMA data
+   RamaPrelimSalCutoff = 1/(1*60*60); % filter cutoff (Hz) for
+                                      % filtering prelim RAMA
+                                      % salinity data (set NaN to disable)
    use_TS_relation = 0; % fit TS relation to estimate N2 from
                         % mooring data?
    use_mooring_sal = 1; % use mooring salinity along with dTdz_i
@@ -233,7 +236,22 @@ if do_dTdz_m
       end
 
       if use_rama
+          % Using RAMA prelminary data (10 min T,S)
           [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth);
+
+          if ~isnan(RamaPrelimSalCutoff)
+              disp('Low pass filtering RAMA salinity')
+              Sfilt = gappy_filt(1./diff(T1.time(1:2)*86400), ...
+                                 {['l' num2str(RamaPrelimSalCutoff)]}, ...
+                                 4, T1.S);
+              T1.S = Sfilt;
+              % figure; plot(T1.time, T1.S); hold on; plot(T1.time, Sfilt);
+
+              Sfilt = gappy_filt(1./diff(T2.time(1:2)*86400), ...
+                                 {['l' num2str(RamaPrelimSalCutoff)]}, ...
+                                 4, T2.S);
+              T2.S = Sfilt;
+          end
       end
 
       %_______ EXAMPLE________________
