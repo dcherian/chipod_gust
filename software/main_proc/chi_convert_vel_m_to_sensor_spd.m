@@ -26,18 +26,18 @@ end
    v   = interp1(vel_m.time, vel_m.v, data.time, 'linear','extrap');
    spd = interp1(vel_m.time, vel_m.spd, data.time, 'linear','extrap');
 
-   cmp = angle(interp1(data.time_cmp, exp(1i*data.cmp/180*pi), data.time, 'linear','extrap'));
+   %cmp = angle(interp1(data.time_cmp, exp(1i*data.cmp/180*pi), data.time, 'linear','extrap'));
 
 
 
 
 % Simple assuption chipod is perfectly stired in the flow
-  %velx = -spd; % current comming opposed the sensor
-  %vely = zeros(size(velx));
+  velx = -spd; % current comming opposed the sensor
+  vely = zeros(size(velx));
 
 % more sophisticated use compass
-  velx = u.*sin(cmp) + v.*cos(cmp); 
-  vely = u.*cos(cmp) + v.*sin(cmp); 
+%velx = u.*sin(cmp) + v.*cos(cmp);
+%  vely = u.*cos(cmp) + v.*sin(cmp);
 
 
 % speed data
