@@ -46,12 +46,12 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
     %pflag = pflag.c_vc(0);      % switch off viscous convective processing (default on)
     %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
   
-    %pflag = pflag.c_vel_p(0);    % use pitot velocities 
+    pflag = pflag.c_vel_p(0);    % use pitot velocities
     %pflag = pflag.c_vel_m(0);    % use mooring velocities 
-    %pflag = pflag.c_Tzi(0);      % use local (interal) stratification 
+    pflag = pflag.c_Tzi(0);      % use local (interal) stratification
     %pflag = pflag.c_Tzm(0);      % use mooring stratification 
 
-    %pflag.master.pumped = 1;    % do you use a surface pumped mooring (default = 0)
+    pflag.master.pumped = 1;    % do you use a surface pumped mooring (default = 0)
 
     pflag.master.use_compass = 1; % if 0, assume chipod vane moves it
                                   % into the flow perfectly
