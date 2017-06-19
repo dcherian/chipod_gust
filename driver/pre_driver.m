@@ -31,7 +31,7 @@ close all;
    CorvallisDecl = 15+27/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 56;
+   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 76;
    
    % name of old mooring file
    if use_old_moor_file
@@ -217,6 +217,10 @@ if do_dTdz_m
           T2.T = temp(:, ind2);
           T2.S = salt(:, ind2);
           T2.z = pres(:, ind2);
+
+          % nan out glitch
+          T2.S(16345:16368) = NaN;
+          T2.S(37219:37279) = NaN;
 
           %_______ EXAMPLE________________
           %  load('../../G002/proc/temp.mat') ; % surounding instruments
