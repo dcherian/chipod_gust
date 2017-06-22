@@ -218,6 +218,8 @@ if do_dTdz_m
           T2.S = salt(:, ind2);
           T2.z = pres(:, ind2);
 
+          T2.S = T2.S + 0.035;
+
           %_______ EXAMPLE________________
           %  load('../../G002/proc/temp.mat') ; % surounding instruments
           %     T1.time = T.time;
