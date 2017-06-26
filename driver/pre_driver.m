@@ -31,7 +31,7 @@ close all;
    CorvallisDecl = 15+27/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 56;
+   ChipodLon = 88.5; ChipodLat = 8; ChipodDepth = 104;
    
    % name of old mooring file
    if use_old_moor_file
@@ -40,10 +40,10 @@ close all;
    end
 
 %_____________________ebob 2013 NRL mooring data__________
-   NRLid = '1'; % which NRL mooring?
-   ebobctdname = ['../../../ancillary/ctd/NRL' NRLid '-corrected.mat'];
+   NRLid = '5'; % which NRL mooring?
+   ebobctdname = ['../../../ancillary/ctd/NRL' NRLid 'SP.mat'];
    ebobadcpname = ['../../../ancillary/adcp/NRL' NRLid '.mat'];
-   buoydepth = 44;
+   buoydepth = 72;
 
    if ChipodDepth - buoydepth < 15
        disp('First chipod from surface');
