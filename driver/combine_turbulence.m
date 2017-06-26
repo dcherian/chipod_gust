@@ -75,7 +75,6 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    CP.pflag.master.winters_dasaro = 1;
 
-
 %_____________________do everything______________________
 CP
 do_combine_turb(basedir, savedir, CP, do_combine, do_plot, do_mask, save_fig, is_visible)
