@@ -50,7 +50,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
     %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
   
-    %pflag = pflag.c_vel_p(0);    % use pitot velocities 
+    pflag = pflag.c_vel_p(0);    % use pitot velocities
     pflag = pflag.c_vel_m(1);    % use mooring velocities
     pflag = pflag.c_Tzi(0);      % use local (interal) stratification
     pflag = pflag.c_Tzm(1);      % use mooring stratification

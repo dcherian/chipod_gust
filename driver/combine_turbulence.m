@@ -73,6 +73,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    CP.pflag.master.winters_dasaro = 1;
 
+   CP.pflag = CP.pflag.c_vel_p(0);
 
 %_____________________do everything______________________
 CP

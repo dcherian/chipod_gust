@@ -12,11 +12,11 @@ close all;
    do_parallel = 0;     % use paralelle computing 
    do_raw_data = 0;     % do the averaging of the raw-data (1) or skip (0) if done before
 	avg_window = 30;  % averging window for praw (default 600 [sec])
-   do_v0_self  = 0;     % detremine V0 based on a min of the averaged signal (self contained)
+   do_v0_self  = 1;     % detremine V0 based on a min of the averaged signal (self contained)
      DcalWindow =  1000;    % 1000 days window for V0 time (effectivly only a single value for the entire record)
      DcalIncrement = 1000;  % 1000 day increment
-   do_v0_adcp  = 0;     % detremin V0 based on a fit against reference velocity (adcp) data
-   do_plot     = 0;     % generate some figures in ../pics/ to compare the different velocity estimates
+   do_v0_adcp  = 1;     % detremin V0 based on a fit against reference velocity (adcp) data
+   do_plot     = 1;     % generate some figures in ../pics/ to compare the different velocity estimates
    do_vel_p    = 0;     % which calibration should be used for vel_p (0 none (default), 1: adcp, 2: self)
    do_P1sec    = 0;     % this generates proc/P_1sec.mat based on data from temp.mat
 
@@ -35,8 +35,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    [TL] =   whoAmI_timeLimits(basedir);
    time_range      = TL.pitot;
  % set manually
-   %time_range(1)  = datenum(2000, 1, 1, 0, 0, 0);
-   %time_range(2)  = datenum(2030, 1, 1, 0, 0, 0);
+   time_range(1)  = datenum(2013, 11, 29, 16, 0, 0);
+   time_range(2)  = datenum(2014, 05, 1, 0, 0, 0);
 
    % calibrate in time range different from valid data time range?
    % if so set limits here just as for time_range.
