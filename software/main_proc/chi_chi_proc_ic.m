@@ -11,8 +11,7 @@ function [chi] = chi_chi_proc_ic(Tp, S, Tz, T)
 %     Tz.time  :  time vector of Tz and N2   
 %     Tz.Tz    :  Tz
 %     Tz.N2    :  N2
-%     Tz.Tzmask : Tz variable used for masking
-%     T.time   :  time vector of T 
+%     T.time   :  time vector of T
 %     T.T      :  T
 %     [T.S]    :  S (default set to 35 psu) 
 %     T.depth  :  depth
@@ -35,8 +34,6 @@ function [chi] = chi_chi_proc_ic(Tp, S, Tz, T)
   
 
 %_____________________default values______________________
-
-min_dTdz = 1e-4;
 
 if ~isfield(T, 'S') 
    T.S = ones(size([T.T]))*35;
@@ -128,11 +125,9 @@ thermistor_cutoff_frequency  = 32;
    % avg.fspd(ik) >= 0.04  && dTdz(i)>min_dTdz 
    chi.mask = ones(size(chi.time));
 
-   chi.mask(abs(chi.Tzmask)<min_dTdz) = 0;
    chi.mask(isnan(chi.dTdz))        = 0;
    chi.mask(isnan(chi.N2))          = 0;
    chi.mask(chi.N2<0)               = 0;
-   chi.mask(chi.spd<.05)            = 0;
 
 
 

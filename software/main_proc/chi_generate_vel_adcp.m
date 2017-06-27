@@ -31,7 +31,7 @@ vel_m.time  = time;
 vel_m.depth = z_chi;
 
 
-if z_adcp == z_chi   % in case it is already interpolated
+if (length(z_chi) == 1) & (z_adcp == z_chi)   % in case it is already interpolated
 
    vel_m.u = u;
    vel_m.v = v;
@@ -47,15 +47,21 @@ else     % in cse it is at a differnt depth interpolate
 
    if sz(2) == length(time) % fix dimension order  
        z_adcp = z_adcp';
+   end
+   if size(u,2) == length(time)
        u = u';
        v = v';
+   end
+
+   if length(z_chi) == 1
+       z_chi = z_chi * ones(size(time));
    end
 
    % loop through every time step
    for t = 1:length(time)
 
-      vel_m.u(t) = interp1(z_adcp(t,:), u(t,:), z_chi);
-      vel_m.v(t) = interp1(z_adcp(t,:), v(t,:), z_chi);
+      vel_m.u(t) = interp1(z_adcp(t,:), u(t,:), z_chi(t));
+      vel_m.v(t) = interp1(z_adcp(t,:), v(t,:), z_chi(t));
 
    end
 end

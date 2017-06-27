@@ -161,16 +161,19 @@ end
 
 
 %_____________________detremine V0 based on min method (self contained)______________________
+Porg = P;
 if do_v0_self
 
-
-   % calculate V0 as the median of the smalles 5 % of the averaged values
+   % calculate V0 as the median of the smallest 5 % of the averaged values
       w_sort = sort(P.W(iiP));
       W.V0 = median(w_sort(1:round(length(w_sort)/20)));
 
    % calibrate voltage into speeds
+   % temperature calibration done earlier so set that to 0
    [P.spd, ~, ~] = pitot_calibrate(P.W, P.T, 0, W.V0, W.T0, 0, 1/W.Pd(2), 0, 0);
 
+   disp(['Time instants with calibrated Pd < 0 = ' ...
+        num2str(sum(P.spd(iiP) == 0)/length(P.spd(iiP))*100) '%'])
    % add directional information from the compass
    P.U = pitot_add_direction(P.time, P.spd, P.time, P.cmp);
 
@@ -221,6 +224,7 @@ if do_v0_self
    save('../calib/header_p.mat', 'W');
 
    save('../proc/P_self.mat', 'P');
+   P = Porg;
 end
 
 %_____________________detremine V0 based on a fit against ADCP data______________________
@@ -262,7 +266,7 @@ if do_v0_adcp
 
 
    % calculate direction off-set
-   D_off = (angle(nanmean(P.U(iiP))) - angle(nanmean(vel_m.U(iiA))))*180/pi;
+   D_off = (angle(nanmean(P.U)) - angle(nanmean(vel_m.U(iiA))))*180/pi;
    disp('The direction off set between ADCP and Chipod is');
    disp([num2str( D_off ) ' deg']);
 

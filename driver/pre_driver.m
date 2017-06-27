@@ -16,34 +16,31 @@ close all;
    do_dTdz_m   = 1;     % generate dTdz_m.mat
    do_dTdz_i   = 0;     % generate dTdz_i.mat 
    use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
-   use_rama    = 1;     % use prelim processed RAMA data
-   RamaPrelimSalCutoff = 1/(1*60*60); % filter cutoff (Hz) for
-                                      % filtering prelim RAMA
-                                      % salinity data (set NaN to disable)
-   use_TS_relation = 0; % fit TS relation to estimate N2 from
-                        % mooring data?
+   modify_header_info = 1; % fix header info in this file?
+
    use_mooring_sal = 1; % use mooring salinity along with dTdz_i
                         % to estimate N^2 in dTdz_i.
                         % otherwise code assumes fixed salinity=35.
-   modify_header_info = 0; % fix header info in this file?
+   use_TS_relation = 0; % fit TS relation to estimate N2 from
+                        % mooring data? Use (with caution) when you
+                        % have only 1 salinity sensor
 
-%_____________________include path of processing flies______________________
-addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
 
+   % chipod location (positive North, East & Down)
+   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 5
 
-%____________________set directories______________________    
-   here    =   pwd;                % mfiles folder
-   basedir =   here(1:(end-6));    % substract the mfile folder
-   savedir =   [basedir 'proc/'];  % directory directory to save data
-   unit    = chi_get_unit_name(basedir); % get unit name
+%_____________________RAMA preliminary data____________
+   use_rama    = 1     % use prelim processed RAMA data
+   if use_rama
+       RamaPrelimSalCutoff = 1/(1*60*60); % filter cutoff (Hz) for
+                                          % filtering prelim RAMA
+                                          % salinity data (set NaN to disable)
+       rho_tanh_fit = 1; % Use N2 from fitted tanh profile
+       ramaname = '~/rama/RamaPrelimProcessed/RAMA13.mat';
+   end
 
-%_____________________get list of all raw data______________________
-   [fids, fdate] = chi_find_rawfiles(basedir);
 
 %_____________________for automated PMEL mooring processing____________
-   % chipod location (positive North, East & Down)
-   ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
-
    if use_pmel
        pmeldir = '~/TaoTritonPirataRama/'; % directory with pmel mooring files
                                             % (can obtain an updated copy from ganges)
@@ -61,10 +58,20 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
        deployEnd = data.datenum(end);
    end
 
-   % use RAMA preliminary data
-   if use_rama
-       ramaname = '~/rama/RamaPrelimProcessed/RAMA13.mat';
-   end
+%_____________________include path of processing flies______________________
+addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
+
+
+%____________________set directories______________________    
+   here    =   pwd;                % mfiles folder
+   basedir =   here(1:(end-6));    % substract the mfile folder
+   savedir =   [basedir 'proc/'];  % directory directory to save data
+   unit    = chi_get_unit_name(basedir); % get unit name
+   rawdir       = [basedir filesep 'raw' filesep]; % raw files location
+
+%_____________________get list of all raw data______________________
+   [fids, fdate] = chi_find_rawfiles(basedir);
+
 
 %%%%%%%%%%%%%%% header data %%%%%%%%%%%%%%%%%%%%%%
 
@@ -236,21 +243,41 @@ if do_dTdz_m
       end
 
       if use_rama
+          clear T1 T2
           % Using RAMA prelminary data (10 min T,S)
           [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth);
+          Smean = (T1.S + T2.S)/2;
+          Tmean = (T1.T + T2.T)/2;
 
-          if ~isnan(RamaPrelimSalCutoff)
-              disp('Low pass filtering RAMA salinity')
-              Sfilt = gappy_filt(1./diff(T1.time(1:2)*86400), ...
-                                 {['l' num2str(RamaPrelimSalCutoff)]}, ...
-                                 4, T1.S);
-              T1.S = Sfilt;
-              % figure; plot(T1.time, T1.S); hold on; plot(T1.time, Sfilt);
+          alpha = sw_alpha(Smean, Tmean, sw_pres(ChipodDepth, ChipodLat));
+          beta = sw_beta(Smean, Tmean, sw_pres(ChipodDepth, ChipodLat));
 
-              Sfilt = gappy_filt(1./diff(T2.time(1:2)*86400), ...
-                                 {['l' num2str(RamaPrelimSalCutoff)]}, ...
-                                 4, T2.S);
-              T2.S = Sfilt;
+          if rho_tanh_fit
+              rama = load(ramaname);
+              idx = find(rama.N2z == ChipodDepth);
+              Tz_m.N2 = smooth(deglitch(rama.N2(:, idx), 12, 2), 6)';
+              Tz_m.time = rama.time;
+              Tz_m.Tz = (T1.T - T2.T)./abs(T1.z - T2.z);
+              Tz_m.Sz = 1./beta .* (-1/9.81*rama.N2(:, idx)' ...
+                                    + alpha .* Tz_m.Tz);
+              Tz_m.Sz = smooth(deglitch(Tz_m.Sz, 12, 2), 6)';
+              Tz_m.time = rama.time;
+
+              save([basedir 'input/dTdz_m.mat'], 'Tz_m')
+          else
+              if ~isnan(RamaPrelimSalCutoff)
+                  disp('Low pass filtering RAMA salinity')
+                  Sfilt = gappy_filt(1./diff(T1.time(1:2)*86400), ...
+                                     {['l' num2str(RamaPrelimSalCutoff)]}, ...
+                                     4, T1.S);
+                  T1.S = Sfilt;
+                  % figure; plot(T1.time, T1.S); hold on; plot(T1.time, Sfilt);
+
+                  Sfilt = gappy_filt(1./diff(T2.time(1:2)*86400), ...
+                                     {['l' num2str(RamaPrelimSalCutoff)]}, ...
+                                     4, T2.S);
+                  T2.S = Sfilt;
+              end
           end
       end
 
@@ -266,8 +293,14 @@ if do_dTdz_m
       %     T2.T    = T.T; 
       %     T2.S    = ones(size((T.T)))*35; 
 
-      chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
-                          T2.time, T2.z, T2.T, T2.S, sdir, use_TS_relation);
+      if ~rho_tanh_fit
+          chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
+                              T2.time, T2.z, T2.T, T2.S, sdir, ...
+                              use_TS_relation);
+      end
+
+      save([basedir filesep 'proc' filesep 'T_m.mat'], ...
+           'T1', 'T2')
 
       %__________________recalculate N^2 using processed mooring salinity____________________
 
@@ -281,7 +314,7 @@ if do_dTdz_m
           load ../input/dTdz_m.mat
 
           % interpolate to Tz_i.time
-          dSdz = interp1(T1.time, (T1.S-T2.S)/abs(T1.z-T2.z), Tz_i.time);
+          dSdz = interp1(Tz_m.time, Tz_m.Sz, Tz_i.time);
           Smean = interp1(T1.time, (T1.S + T2.S)/2, Tz_i.time);
 
           Tnames = {'T1', 'T2', 'T12'};
@@ -298,6 +331,7 @@ if do_dTdz_m
           end
 
           Tz_i.S = Smean;
+          Tz_i.Sz = dSdz;
           save('../input/dTdz_i.mat', 'Tz_i');
       end
 end

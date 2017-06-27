@@ -89,7 +89,7 @@ function [] = chi_main_proc(basedir, rfid, pflag, varargin)
             vel_p1 = vel_p;
             clear vel_p;
             [vel_p.time, vel_p.spd] = ...
-                chi_convert_vel_m_to_sensor_spd(vel_p1, data, pflag.master.use_compass);
+                chi_convert_vel_m_to_sensor_spd(vel_p1, data);
 
          else % case 2 not surface pumped mooring
 
@@ -204,13 +204,6 @@ for i = 1:length(pflag.id)
                Tz.N2    =  Tz_i.N2_12;
            end
 
-           % if not pumped chipod or internal Tz was not processed
-           if ~isfield(Tz, 'Tzmask')
-               Tz.Tzmask = Tz;
-           else
-               Tz.Tzmask = interp1(Tz_i.time, Tz.Tzmask, Tz.time);
-           end
-         
          %--------------------- Chi Processing----------------------
            if id([-1:0]+end) == 'ic'
              chi = chi_chi_proc_ic(Tp, S, Tz, T) ;
