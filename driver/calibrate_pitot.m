@@ -30,9 +30,11 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
  % get time limits from whoAmI;
    [TL] =   whoAmI_timeLimits(basedir);
    time_range      = TL.pitot;
- % set manually
-   %time_range(1)  = datenum(2000, 1, 1, 0, 0, 0);
-   %time_range(2)  = datenum(2030, 1, 1, 0, 0, 0);
+
+   % This is the time range where the pitot sensor is returning
+   % good data
+   time_range(1)  = datenum(2013, 12, 19, 0, 0, 0);
+   time_range(2)  = datenum(2014, 12, 30, 0, 0, 0);
 
    % calibrate in time range different from valid data time range?
    % if so set limits here just as for time_range.
