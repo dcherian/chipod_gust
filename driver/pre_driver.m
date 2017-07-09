@@ -39,6 +39,13 @@ close all;
        moorname = ['../input/mooring_' ChipodDeployment '.mat'];
    end
 
+   %_____________________RAMA preliminary data____________
+   use_rama    = 1     % use prelim processed RAMA data
+   if use_rama
+       ramaname = '~/rama/RamaPrelimProcessed/RAMA13-corrected.mat';
+   end
+
+
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
 
@@ -151,7 +158,13 @@ if do_dTdz_m
                                                       deployEnd, pmeldir, 'RAMA', ...
                                                       Tfreq, Sfreq);
       end
-      
+
+      if use_rama
+          clear T1 T2
+          % Using RAMA prelminary data (10 min T,S)
+          [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth);
+      end
+
       if use_old_moor_file
             load(moorname);
             chi_generate_dTdz_m_oldmoorfiles(moor,ChipodDepth,sdir);
@@ -159,15 +172,15 @@ if do_dTdz_m
 
           %_______LOAD EXAMPLE________________
           %  load('../../G002/proc/temp.mat') ; % surounding instruments
-          %     T1.time = T.time; 
-          %     T1.z    = nanmedian(T.depth); 
-          %     T1.T    = T.T; 
-          %     T1.S    = ones(size((T.T)))*35; 
+          %     T1.time = T.time;
+          %     T1.z    = nanmedian(T.depth);
+          %     T1.T    = T.T;
+          %     T1.S    = ones(size((T.T)))*35;
           %  load('../../G011/proc/temp.mat') ; % surounding instruments
-          %     T2.time = T.time; 
-          %     T2.z    = nanmedian(T.depth); 
-          %     T2.T    = T.T; 
-          %     T2.S    = ones(size((T.T)))*35; 
+          %     T2.time = T.time;
+          %     T2.z    = nanmedian(T.depth);
+          %     T2.T    = T.T;
+          %     T2.S    = ones(size((T.T)))*35;
 
           chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
                               T2.time, T2.z, T2.T, T2.S, sdir, ...
@@ -175,8 +188,8 @@ if do_dTdz_m
 
           save([basedir filesep 'proc' filesep 'T_m.mat'], ...
                'T1', 'T2')
-
       end
+
       %__________________recalculate N^2 using processed mooring salinity____________________
 
       if use_mooring_sal
