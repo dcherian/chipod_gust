@@ -27,7 +27,7 @@ close all;
 
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 5
+   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 15;
 
 %_____________________RAMA preliminary data____________
    use_rama    = 1     % use prelim processed RAMA data
@@ -35,8 +35,7 @@ close all;
        RamaPrelimSalCutoff = 1/(1*60*60); % filter cutoff (Hz) for
                                           % filtering prelim RAMA
                                           % salinity data (set NaN to disable)
-       rho_tanh_fit = 1; % Use N2 from fitted tanh profile
-       ramaname = '~/rama/RamaPrelimProcessed/RAMA13.mat';
+       ramaname = '~/rama/RamaPrelimProcessed/RAMA13-corrected.mat';
    end
 
 
@@ -246,39 +245,6 @@ if do_dTdz_m
           clear T1 T2
           % Using RAMA prelminary data (10 min T,S)
           [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth);
-          Smean = (T1.S + T2.S)/2;
-          Tmean = (T1.T + T2.T)/2;
-
-          alpha = sw_alpha(Smean, Tmean, sw_pres(ChipodDepth, ChipodLat));
-          beta = sw_beta(Smean, Tmean, sw_pres(ChipodDepth, ChipodLat));
-
-          if rho_tanh_fit
-              rama = load(ramaname);
-              idx = find(rama.N2z == ChipodDepth);
-              Tz_m.N2 = smooth(deglitch(rama.N2(:, idx), 12, 2), 6)';
-              Tz_m.time = rama.time;
-              Tz_m.Tz = (T1.T - T2.T)./abs(T1.z - T2.z);
-              Tz_m.Sz = 1./beta .* (-1/9.81*rama.N2(:, idx)' ...
-                                    + alpha .* Tz_m.Tz);
-              Tz_m.Sz = smooth(deglitch(Tz_m.Sz, 12, 2), 6)';
-              Tz_m.time = rama.time;
-
-              save([basedir 'input/dTdz_m.mat'], 'Tz_m')
-          else
-              if ~isnan(RamaPrelimSalCutoff)
-                  disp('Low pass filtering RAMA salinity')
-                  Sfilt = gappy_filt(1./diff(T1.time(1:2)*86400), ...
-                                     {['l' num2str(RamaPrelimSalCutoff)]}, ...
-                                     4, T1.S);
-                  T1.S = Sfilt;
-                  % figure; plot(T1.time, T1.S); hold on; plot(T1.time, Sfilt);
-
-                  Sfilt = gappy_filt(1./diff(T2.time(1:2)*86400), ...
-                                     {['l' num2str(RamaPrelimSalCutoff)]}, ...
-                                     4, T2.S);
-                  T2.S = Sfilt;
-              end
-          end
       end
 
       %_______ EXAMPLE________________
@@ -288,16 +254,15 @@ if do_dTdz_m
       %     T1.T    = T.T; 
       %     T1.S    = ones(size((T.T)))*35; 
       %  load('../../G011/proc/temp.mat') ; % surounding instruments
-      %     T2.time = T.time; 
-      %     T2.z    = nanmedian(T.depth); 
-      %     T2.T    = T.T; 
-      %     T2.S    = ones(size((T.T)))*35; 
+          %     T2.time = T.time; 
+          %     T2.z    = nanmedian(T.depth); 
+          %     T2.T    = T.T; 
+          %     T2.S    = ones(size((T.T)))*35; 
 
-      if ~rho_tanh_fit
-          chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
-                              T2.time, T2.z, T2.T, T2.S, sdir, ...
-                              use_TS_relation);
-      end
+
+      chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
+                          T2.time, T2.z, T2.T, T2.S, sdir, ...
+                          use_TS_relation);
 
       save([basedir filesep 'proc' filesep 'T_m.mat'], ...
            'T1', 'T2')
