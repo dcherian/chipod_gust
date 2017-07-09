@@ -2,6 +2,11 @@ function [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth)
 
     rama = load(ramaname);
 
+    try
+        rama = rama.rama;
+    catch ME
+    end
+
     [z1,z2] = ChooseDepthLevels(floor(rama.depth), ChipodDepth);
 
     disp(['RamaPrelim: Choosing depths at ' ...
