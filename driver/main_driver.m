@@ -51,9 +51,9 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
     %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
   
     %pflag = pflag.c_vel_p(0);    % use pitot velocities 
-    %pflag = pflag.c_vel_m(0);    % use mooring velocities 
-    %pflag = pflag.c_Tzi(0);      % use local (interal) stratification 
-    %pflag = pflag.c_Tzm(0);      % use mooring stratification 
+    pflag = pflag.c_vel_m(1);    % use mooring velocities
+    pflag = pflag.c_Tzi(0);      % use local (interal) stratification
+    pflag = pflag.c_Tzm(1);      % use mooring stratification
 
     %pflag.master.pumped = 0;    % do you use a surface pumped mooring (default = 1)
 
@@ -66,7 +66,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
 
   % IC-estimate
-    %pflag = pflag.c_ic(1);      % switch on ic processing (default off)
+    pflag = pflag.c_ic(1);      % switch on ic processing (default off)
     %pflag = pflag.c_vc(0);      % switch off viscous convective processing (default on)
     %pflag.master.ic_dt     = 600; % (in seconds) time window for ic-estimate 
     %pflag.master.ic_frange =  [1/50 1/19]; % fiting range for ic-estimate
