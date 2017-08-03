@@ -105,32 +105,28 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
     end
 
-
 %_____________________for automated PMEL mooring processing____________
-    if use_pmel
-        pmeldir = '~/ganges/data/TaoTritonPirataRama/'; % directory with pmel mooring files
+   if use_pmel | (use_rama & do_vel_m)
+       pmeldir = '~/TaoTritonPirataRama/'; % directory with pmel mooring files
                                             % (can obtain an updated copy from ganges)
-        % which high-freq data file should I use?
-        % 2m/10m/30m/hr
-        velfreq   = '30m';
-        Tfreq     = '10m';
-        Sfreq     = 'dy';
+       % which high-freq data file should I use?
+       % 2m/10m/30m/hr
+       velfreq = '30m';
+       Tfreq = '10m';
+       Sfreq = 'dy';
 
-        % find start and end of depoyment from raw files
-        data         = raw_load_chipod([rawdir fids{1}]);
-        deployStart  = data.datenum(1);
-        data         = raw_load_chipod([rawdir fids{end}]);
-        deployEnd    = data.datenum(end);
-
-    end
-
-
+       % find start and end of depoyment from raw files
+       data = raw_load_chipod([rawdir fids{1}]);
+       deployStart = data.datenum(1);
+       data = raw_load_chipod([rawdir fids{end}]);
+       deployEnd = data.datenum(end);
+   end
 
 %%%%%%%%%%%%%%%%%%% mooring velocity %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 if do_vel_m
     sdir  = [basedir filesep 'input' filesep];
 
-    if use_pmel
+    if use_pmel | use_rama
         moor = ExtractUVFromTaoTritonPirataRama(ChipodLon, ChipodLat, ...
                                                 ChipodDepth, deployStart, ...
                                                 deployEnd, pmeldir, ...
