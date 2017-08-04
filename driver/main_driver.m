@@ -46,7 +46,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    %---------------------add manual flags----------------------
     %pflag = pflag.c_T1(0);       % switch off T1 if bad
-    %pflag = pflag.c_T2(0);       % switch off T2 if bad
+    pflag = pflag.c_T2(0);       % switch off T2 if bad
 
     %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
   

@@ -36,7 +36,9 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    %_____________________change as much as you like in CP______________________
 
-      %CP.time_range        = [datenum(2000, 1, 1, 0, 0, 0) datenum(2060, 1, 1, 0, 0, 0)];
+      %CP.time_range        = [datenum(2000, 1, 1, 0, 0, 0) datenum(2060, 1,
+      %1, 0, 0, 0)];
+      CP.time_range(2)  = datenum(2016, 1, 31, 12, 0, 0);
       %CP.T1death           = datenum(2000, 1, 1, 0, 0, 0);
       %CP.T2death           = datenum(2000, 1, 1, 0, 0, 0);
       %CP.adcpdeath         = datenum(2000, 1, 1, 0, 0, 0);
