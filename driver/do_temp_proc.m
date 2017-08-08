@@ -31,8 +31,6 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 % get time limits from whoAmI;
    [TL] =   whoAmI_timeLimits(basedir);
    time_range      = TL.master;
-  % time_range = [datenum(2000, 1, 1, 0, 0, 0) ...
-  %            datenum(2060, 1, 1, 0, 0, 0)];
 
 if do_raw_proc
    

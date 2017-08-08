@@ -10,8 +10,8 @@ close all;
 
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
-   do_vel_m    = 0;     % generate vel_m.mat
-   do_dTdz_m   = 0;     % generate dTdz_m.mat
+   do_vel_m    = 1;     % generate vel_m.mat
+   do_dTdz_m   = 1;     % generate dTdz_m.mat
    use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
    use_mooring_sal = 0; % use mooring salinity along with dTdz_i
                         % to estimate N^2 in dTdz_i.
@@ -25,13 +25,13 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 329; % exact value from calibration file
                         % (no sign changes!)
-   DeployDecl = 0; % at deployment location
-   CorvallisDecl = 15+44/60; % at corvallis
+   DeployDecl = -0.90; % at deployment location
+   CorvallisDecl = 15+28/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
+   ChipodLon = 90; ChipodLat = 15; ChipodDepth = 30;
 
    % name of old mooring file
    if use_old_moor_file
@@ -42,7 +42,7 @@ close all;
    %_____________________RAMA preliminary data____________
    use_rama    = 1     % use prelim processed RAMA data
    if use_rama
-       ramaname = '~/rama/RamaPrelimProcessed/RAMA13-corrected.mat';
+       ramaname = '~/rama/RamaPrelimProcessed/RAMA14-15N.mat';
    end
 
 
@@ -90,19 +90,18 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         save(fid, 'head');
 
         % _____pitot calibrations______
-        % W.T  = [0 -0.003154669 0 0 0];
-        % W.Ps = [0 0 0 0 0]; % pressure sensor is bad; accounted for in offset
-        % W.Tilt = [0 0.000088684 0 0 0];
-        % W.Pd = [0 0.0003995 0 0 0]; %if slope>1 else W.Pd = [0 slope 0 0 0];
-        % assert(W.Pd(2) < 1, 'WPd(2) > 1 !');
-        % % offsets
-        % W.V0 = 0;
-        % W.P0 = 0;
-        % W.T0 = 0;
-        % save header in proper destination
-        % fid = [basedir filesep 'calib' filesep 'header_p.mat'] ;
-        % save(fid, 'W');
+        W.T  = [0 -0.0050566 0 0 0];
+        W.Ps = [0 0 0 0 0]; % pressure sensor did not turn on, T2 did not either
+        W.Tilt = [0 3.7857e-5 0 0 0];
+        W.Pd = [0 1/2390.906 0 0 0]; %if slope>1 else W.Pd = [0 slope 0 0 0];
 
+        % offsets
+        W.V0 = 0;
+        W.P0 = 0;
+        W.T0 = 0;
+        % save header in proper destination
+        fid = [basedir filesep 'calib' filesep 'header_p.mat'] ;
+        save(fid, 'W');
     end
 
 %_____________________for automated PMEL mooring processing____________
