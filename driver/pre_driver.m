@@ -159,6 +159,8 @@ if do_dTdz_m
           clear T1 T2
           % Using RAMA prelminary data (10 min T,S)
           [T1, T2] = ExtractTSFromRamaPrelim(ramaname, ChipodDepth);
+          T1.S = smooth(T1.S, 6);
+          T2.S = smooth(T2.S, 6);
       end
 
       if use_old_moor_file
