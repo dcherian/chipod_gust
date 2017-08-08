@@ -98,11 +98,11 @@ end
 % missing data checked over chipod deployment time
 function [index1, index2] = ChooseDepthLevels(var, depth, ChipodDepth)
 
-    index1 = find( (abs(-depth + ChipodDepth) <= 15) ...
+    index1 = find( (abs(-depth + ChipodDepth) < 10) ...
                     & (ChipodDepth > depth));
     index1 = ChooseLeastNans(var, index1);
 
-    index2 = find( (abs(-depth + ChipodDepth) <= 10) ...
+    index2 = find( (abs(-depth + ChipodDepth) < 10) ...
                     & (ChipodDepth < depth));
     index2 = ChooseLeastNans(var, index2);
 

@@ -36,10 +36,11 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    %_____________________change as much as you like in CP______________________
 
-      %CP.time_range        = [datenum(2000, 1, 1, 0, 0, 0) datenum(2060, 1, 1, 0, 0, 0)];
+      CP.time_range        = [datenum(2000, 1, 1, 0, 0, 0)
+                              datenum(2060, 1, 1, 0, 0, 0)];
       %CP.T1death           = datenum(2000, 1, 1, 0, 0, 0);
       %CP.T2death           = datenum(2000, 1, 1, 0, 0, 0);
-      %CP.adcpdeath         = datenum(2000, 1, 1, 0, 0, 0);
+      CP.adcpdeath          = datenum(2015, 9, 11, 0, 0, 0);
       %CP.nantimes{1}       = []; % sensor T1 for chipod or T sensor on gusT
       %CP.nantimes{2}       = []; % sensor T2 for chipod
       %CP.nantimes{3}       = []; % pitot sensor
