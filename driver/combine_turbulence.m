@@ -55,7 +55,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    mask_tp = 0;
 
-   ChipodDepth = 0;
+   ChipodDepth = 15;
 
    % normalization for *masking* histograms
    % final processed histograms are always pdf
@@ -64,8 +64,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    % if you want to restrict the time range that should be combined
    % use the following
    % This restricts time range for BOTH sensors on chipods
-   time_range(1)  = datenum(2000, 1, 1, 0, 0, 0);
-   time_range(2)  = datenum(2060, 1, 1, 0, 0, 0);
+   time_range(1)  = datenum(2013, 11, 29, 15, 0, 0);
+   time_range(2)  = datenum(2014, 11, 22, 22, 30, 0);
 
    % if one sensor dies earlier, specify that time here.
    T1death = datenum(2060, 1, 1, 0, 0, 0); % chipod T1 or gustT T sensor
@@ -109,11 +109,14 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    % nantimes{sensor_number} = [start_time1, end_time1;
    %                            start_time2, end_time2;]
    % start_time & end_time must be datenum
-   nantimes{1} = []; % sensor T1 for chipod or T sensor on gusT
-   nantimes{2} = []; % sensor T2 for chipod
-   nantimes{3} = []; % pitot sensor
+   nantimes{1} = [datenum(2014, 08, 24, 0, 45, 0), datenum(2014, 08, 24, 1, 0, 0)];
+   nantimes{2} = [datenum(2014, 07, 06, 0, 0, 0), datenum(2014, 07, 07, 0, 0, 0);
+                  datenum(2014, 08, 02, 00, 00, 0), datenum(2014, 08, 03, 00, 00, 0);
+                  datenum(2014, 08, 09, 05, 45, 0), datenum(2014, 08, 09, 06, 15, 0);
+                  datenum(2014, 08, 25, 0, 0, 0), datenum(2014, 08, 27, 0, 0, 0)];
+   nantimes{3} = [];
 
-   runname = '';
+   runname = '2017-08-10';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%% DO NOT CHANGE BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
