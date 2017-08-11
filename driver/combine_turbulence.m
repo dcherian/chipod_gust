@@ -534,10 +534,17 @@ if(do_combine)
          [Turb.(ID), Turb.(ID).stats.max_Kt_percentage] = ApplyMask(Turb.(ID), Turb.(ID).Kt, '>', max_Kt, 'max_Kt');
          [Turb.(ID), Turb.(ID).stats.max_Jq_percentage] = ApplyMask(Turb.(ID), abs(Turb.(ID).Jq), '>', max_Jq, 'max_Jq');
 
+         % noise floor on the second sensor is high. Let's NaN out the low-end
+         % chi = 1e-8 is approx. where the processed distributions start to differ a lot.
+         if sensor == 2
+             if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
+             Histograms(Turb.(ID), hfig2, 'count', [ID ' before cutoff']);
+             Turb.(ID) = ApplyMask(Turb.(ID), Turb.(ID).chi, '<', 10^-(7.9), 'noise floor cutoff');
+         end
+
          if do_plot
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
-
-             Histograms(Turb.(ID), hfig2, 'pdf', ID, ID);
+             Histograms(Turb.(ID), hfig2, 'count', ID, ID);
 
              % daily average summary
              if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
