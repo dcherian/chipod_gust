@@ -25,13 +25,13 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 11.3; % exact value from calibration file
                         % (no sign changes!)
-   DeployDecl = 0; % at deployment location
+   DeployDecl = -1.76; % at deployment location
    CorvallisDecl = 15+27/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 56;
+   ChipodLon = 85.5; ChipodLat = 8; ChipodDepth = 28;
    
    % name of old mooring file
    if use_old_moor_file
@@ -40,10 +40,10 @@ close all;
    end
 
 %_____________________ebob 2013 NRL mooring data__________
-   NRLid = '1'; % which NRL mooring?
+   NRLid = '3'; % which NRL mooring?
    ebobctdname = ['../../../ancillary/ctd/NRL' NRLid '-corrected.mat'];
    ebobadcpname = ['../../../ancillary/adcp/NRL' NRLid '.mat'];
-   buoydepth = 44;
+   buoydepth = 16;
 
    if ChipodDepth - buoydepth < 15
        disp('First chipod from surface');
