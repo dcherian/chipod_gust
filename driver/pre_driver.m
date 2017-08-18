@@ -21,7 +21,7 @@ close all;
                         % have only 1 salinity sensor
    use_old_moor_file = 0;   % use mooring file from an older deployment with
                             % pre-calculated velocity, dTdz and N2
-   modify_header = 0;   % if 1, specify header corrections below
+   modify_header = 1;   % if 1, specify header corrections below
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
@@ -30,16 +30,14 @@ close all;
    DeployDecl = 0; % at deployment location
    CorvallisDecl = 15+44/60; % at corvallis
 
-
    % chipod location (positive North, East & Down)
-   ChipodLon = 140; ChipodLat = 0; ChipodDepth = 29;
-   
+   ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
+
    % name of old mooring file
    if use_old_moor_file
        ChipodDeployment = 'tao14_140';      % change deployment name
        moorname = ['../input/mooring_' ChipodDeployment '.mat'];
    end
-   
 
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
