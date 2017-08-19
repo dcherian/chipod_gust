@@ -3,47 +3,37 @@ function Histograms2D(chi, ID)
     dt = (chi.time(2)-chi.time(1))*86400;
 
     CreateFigure;
-    ax(1) = subplot(321);
-    [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.chi));
+    ax(1) = subplot(221);
+    [counts, xbins, ybins, flag] = hc(chi.dTdz, log10(chi.chi));
     pcolor(xbins, ybins, counts); shading flat;
-    xlabel('dT/dz'); ylabel('log_{10}\chi')
+    xlabel('dT/dz'); ylabel('log_{10} \chi')
     title([ID ' | ' num2str(dt) 's estimates'])
 
-    ax(3) = subplot(323);
-    [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.eps));
-    pcolor(xbins, ybins, counts); shading flat;
-    xlabel('dT/dz'); ylabel('log_{10}\epsilon')
-
-    ax(2) = subplot(322);
-    [counts, xbins, ybins] = hc(chi.spd, log10(chi.chi));
-    pcolor(xbins, ybins, counts); shading flat;
-    xlabel('spd'); ylabel('log_{10}\chi')
-
-    ax(4) = subplot(324);
-    [counts, xbins, ybins] = hc(chi.spd, log10(chi.eps));
-    pcolor(xbins, ybins, counts); shading flat;
-    xlabel('spd'); ylabel('log_{10}\epsilon')
-
-    ax(5) = subplot(325);
+    ax(2) = subplot(222);
     [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.Kt));
     pcolor(xbins, ybins, counts); shading flat;
-    xlabel('dTdz'); ylabel('log_{10}K_T')
+    xlabel('dT/dz'); ylabel('log_{10} K_T')
 
-    ax(6) = subplot(326);
-    [counts, xbins, ybins] = hc(chi.spd, log10(chi.Kt));
+    ax(3) = subplot(223);
+    [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.eps));
     pcolor(xbins, ybins, counts); shading flat;
-    xlabel('spd'); ylabel('log_{10}K_T')
+    xlabel('dT/dz'); ylabel('log_{10} \epsilon')
 
-    linkaxes(ax(1:2), 'y');
-    linkaxes(ax(3:4), 'y');
+    ax(4) = subplot(224);
+    [counts, xbins, ybins] = hc(chi.dTdz, log10(abs(chi.Jq)));
+    pcolor(xbins, ybins, counts); shading flat;
+    xlabel('dT/dz'); ylabel('log_{10} |J_q^t|')
 
-    linkaxes(ax([1, 3, 5]), 'x');
-    linkaxes(ax([2, 4, 6]), 'x');
+    linkaxes(ax, 'x');
 
-    colormap(flipud(gray))
+    if flag
+        title(ax(2), 'Histogram equalized');
+    end
+    load cmap
+    colormap(cmap.chi);
 end
 
-function [counts, xbins, ybins] = hc(x, y)
+function [counts, xbins, ybins, flag] = hc(x, y)
 
     mask = ~isnan(x) & ~isnan(y);
     [counts, xe, ye] = histcounts2(x(mask), y(mask), ...
@@ -54,7 +44,9 @@ function [counts, xbins, ybins] = hc(x, y)
     % try histogram equalization
     try
         counts = histeq(counts, 200);
+        flag = 1;
     catch ME
+        flag = 0;
     end
 
     xbins = (xe(1:end-1) + xe(2:end))/2;
