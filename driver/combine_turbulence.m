@@ -27,6 +27,7 @@ close all;
                   % 'm' for mooring, 'p' for pitot,
                   % '' to choose based on what was used in chi estimate
    avgwindow = 600; % averaging window in seconds
+   avgfn = 'median'; % use median or means to "average" over avgwindow
 
    ChipodDepth = 30;
 
@@ -321,7 +322,8 @@ if(do_combine)
              for f = 1:length(ff)  % run through all fields in chi
                  if ( length(chi.(ff{f})) == length(chi.time) )
                      if strcmpi(ff{f}, 'Kt') | strcmpi(ff{f}, 'Jq'), continue; end
-                     Turb.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                     avg.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                     med.(ID).(ff{f}) = moving_median( chi.(ff{f}), ww, ww );
                  end
              end
              toc;
@@ -329,8 +331,26 @@ if(do_combine)
              % recalculate using averaged quantities
              % if we average over a time period greater than
              % sampling period of dTdz, this estimate will differ!
-             Turb.(ID).Kt = 0.5 * Turb.(ID).chi ./ Turb.(ID).dTdz.^2;
-             Turb.(ID).Jq = -1025 .* 4200 .* Turb.(ID).Kt .* Turb.(ID).dTdz;
+             avg.(ID).Kt = 0.5 * avg.(ID).chi ./ avg.(ID).dTdz.^2;
+             avg.(ID).Jq = -1025 .* 4200 .* avg.(ID).Kt .* avg.(ID).dTdz;
+
+             med.(ID).Kt = 0.5 * med.(ID).chi ./ med.(ID).dTdz.^2;
+             med.(ID).Jq = -1025 .* 4200 .* med.(ID).Kt .* med.(ID).dTdz;
+
+             clear hfig3
+             if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
+             Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
+             Histograms(avg.(ID), hfig3, 'pdf', 'avg')
+             Histograms(med.(ID), hfig3, 'pdf', 'mdn')
+             subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
+             subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
+             print(gcf,['../pics/compare-mean-median-' ID(5:end) '.png'],'-dpng','-r200','-painters')
+
+             if strcmpi(avgfn, 'mean')
+                 Turb = avg;
+             else
+                 Turb = med;
+             end
          else
              Turb.(ID) = chi;
          end
