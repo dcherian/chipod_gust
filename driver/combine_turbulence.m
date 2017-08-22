@@ -368,7 +368,7 @@ if(do_combine)
        subplot(222); title(['Final ' num2str(avgwindow/60) ' min mean']);
 
        print(gcf,['../pics/histograms-final.png'],'-dpng','-r200','-painters')
-       savefig(gcf,['../pics/histograms-final.fig'])
+       % savefig(gcf,['../pics/histograms-final.fig'])
    end
 
    Turb.do_mask = do_mask;
@@ -528,7 +528,7 @@ if do_plot
    %---------------------save imagage----------------------
 
    print(gcf,'../pics/Compare_Turb.png','-dpng','-r200','-painters')
-   savefig(gcf,'../pics/Compare_Turb.fig')
+   % savefig(gcf,'../pics/Compare_Turb.fig')
    
 end
 
