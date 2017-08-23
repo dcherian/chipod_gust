@@ -303,6 +303,14 @@ if(do_combine)
                  if do_plot, Histograms(chi, hfig, normstr, ['volume flushed' perlabel]); end
              end
 
+             if do_plot
+                 disp('... testing Tz masking  ...')
+                 TestMask(chi, abs(chi.dTdz), '<', [5e-4, 1e-3, 2e-3, 3e-3, 4e-3, 5e-3], 'Tz');
+                 subplot(221); title([ID ' | 1s estimates']);
+                 print(gcf,['../pics/tz-masking-' ID '.png'],'-dpng','-r200','-painters')
+                 disp('... finished testing Tz masking  ...')
+             end
+
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
              perlabel = [' -' num2str(percentage, '%.1f') '%'];
              if do_plot, Histograms(chi, hfig, normstr, ['|Tz| > ' num2str(min_dTdz, '%.1e') perlabel]); end
