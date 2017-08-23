@@ -16,6 +16,10 @@ time_range = [datenum(2000, 1, 1, 0, 0, 0) ...
 
 dtind = 600; % every 10 minutes, assuming 1 second estimates
 
+% parameters for spectra of T1Pt, T2Pt
+nfft = 30*600; % length of segment (in seconds)
+nbandsmooth = 1; % number of frequency bands to average over
+
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
 
@@ -193,4 +197,48 @@ if do_plot
         legend('x', 'y', 'z');
         xlabel('Displacement = sqrt(2) x std(integrated accel_{x,y,z}) over 1 minute')
         print(gcf,[basedir 'pics' filesep 'disp.png' ],'-dpng','-r200','-painters')
+
+        %% spectra of T1P and T2P
+        fs = 1/(diff(T.time(1:2))*86400);
+
+        tic; disp('Calculating PSD')
+        [p1,f1] = fast_psd(T.T1, nfft, fs);
+        [p2,f2] = fast_psd(T.T2, nfft, fs);
+
+        % frequency band smoothing
+        nbandsmooth = 1;
+        f = moving_average(f1, nbandsmooth, nbandsmooth);
+        p1a = moving_average(p1, nbandsmooth, nbandsmooth);
+        p2a = moving_average(p2, nbandsmooth, nbandsmooth);
+        toc;
+
+        tic; disp('Calculating PSD')
+        [p1p,f1p] = fast_psd(T.T1Pt, nfft, fs);
+        [p2p,f2p] = fast_psd(T.T2Pt, nfft, fs);
+        toc;
+
+        tscale = 1; %in seconds
+        CreateFigure;
+        ax(1) = subplot(211);
+        loglog(1./f/tscale, p1a); hold on;
+        loglog(1./f/tscale, p2a);
+        legend('T1', 'T2');
+        set(gca, 'XDir', 'reverse')
+        xlabel('Period (s)')
+        ylabel('PSD');
+        title(unit)
+        xlim([1 10])
+
+        ax(2) = subplot(212); cla('reset')
+        loglog(1./f1p, p1p); hold on;
+        loglog(1./f1p, p2p);
+        legend('T1P', 'T2P');
+        set(gca, 'XDir', 'reverse')
+        xlabel('Period (s)')
+        ylabel('PSD');
+        title(unit)
+        xlim([1 10])
+
+        print(gcf,[basedir 'pics' filesep 'temp-spectra.png' ],'-dpng','-r200','-painters')
+
 end
