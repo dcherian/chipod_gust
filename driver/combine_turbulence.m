@@ -438,8 +438,8 @@ if(do_combine)
 
    if do_plot
        figure(hfig2)
-       subplot(221); title(['Final ' num2str(avgwindow/60) ' min mean']);
-       subplot(222); title(['Final ' num2str(avgwindow/60) ' min mean']);
+       subplot(221); title(['Final ' num2str(avgwindow/60) ' min ' avgfn]);
+       subplot(222); title(['Final ' num2str(avgwindow/60) ' min ' avgfn]);
 
        print(gcf,['../pics/histograms-final.png'],'-dpng','-r200','-painters')
        % savefig(gcf,['../pics/histograms-final.fig'])
