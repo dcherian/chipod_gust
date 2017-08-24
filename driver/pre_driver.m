@@ -59,7 +59,11 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
         % will create header.mat file if necessary
         % if header_p.mat exists, it will read it
-        W  = chi_get_calibration_coefs_pitot(basedir);
+        try
+            W  = chi_get_calibration_coefs_pitot(basedir);
+        catch ME
+            disp('You need to fix up the pitot header file');
+        end
 
         % _____usual calibrations______
         if isnan(CompassOffset)
