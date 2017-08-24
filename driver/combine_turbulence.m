@@ -412,6 +412,9 @@ if(do_combine)
              med.(ID).Kt = 0.5 * med.(ID).chi ./ med.(ID).dTdz.^2;
              med.(ID).Jq = -1025 .* 4200 .* med.(ID).Kt .* med.(ID).dTdz;
 
+             avg.(ID) = ApplyMask(avg.(ID), abs(avg.(ID).dTdz), '<', min_dTdz, 'Tz');
+             med.(ID) = ApplyMask(med.(ID), abs(med.(ID).dTdz), '<', min_dTdz, 'Tz');
+
              clear hfig3
              if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
              Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
