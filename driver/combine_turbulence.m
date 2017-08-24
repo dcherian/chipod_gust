@@ -57,6 +57,8 @@ close all;
    nantimes{2} = []; % sensor T2 for chipod
    nantimes{3} = []; % pitot sensor
 
+   runname = '';
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%% DO NOT CHANGE BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,7 +73,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 %_____________________set directories______________________    
    here    =   pwd;                % mfiles folder
    basedir =   here(1:(end-6));    % substract the mfile folder
-   savedir =   [basedir 'proc/'];  % directory directory to save data
+   savedir =   [basedir 'proc/' runname '/'];  % directory directory to save data
    unit    = chi_get_unit_name(basedir); % get unit name
 
    motionfile = [basedir 'proc' filesep '/motion.mat'];
@@ -433,6 +435,10 @@ if(do_combine)
              Histograms(Turb.(ID), hfig2, 'pdf', ID);
          end
 
+         % 2D histograms
+         Histograms2D(Turb.(ID), ID)
+         print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
+
       end
    end
 
@@ -624,3 +630,27 @@ end
 % DebugPlots([], t0, t1, chi1, 'T_z > 3e-4', 1)
 % load ../proc/temp.mat
 % load ../proc/Turb.mat
+
+% t0 = T.time(1);
+% dt = 21; % in days
+% overlap = 5; % in days
+% ii=1;
+% trange = [t0:dt:time_range(end)];
+
+% for ii=1:length(trange)
+
+%     tt = trange(ii);
+%     t1 = tt + dt + overlap;
+%     if t1 > time_range(end)
+%         t1 = time_range(end);
+%     end
+%     CreateFigure;
+%     set(gcf, 'Position', [100 100 1800 900]);
+%     set(gcf, 'renderer', 'opengl')
+%     set(gcf, 'DefaultLineLineWidth', 0.5);
+%     ax = DebugRawData(T, tt-overlap, t1, Turb, nantimes);
+%     ax(1).Title.String = ['i = ' num2str(ii) ' | ' ax(1).Title.String];
+
+%     print('-dpng', ['../pics/debug-' num2str(ii) '.png']);
+%     ii=ii+1;
+% end
