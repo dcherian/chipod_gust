@@ -202,6 +202,8 @@ if(do_combine)
          chi.Kt = 0.5 * chi.chi ./ chi.dTdz.^2;
          chi.Jq = -rho .* cp .* chi.Kt .* chi.dTdz;
 
+         chiold = chi;
+
          if do_plot
              hfig = CreateFigure;
              Histograms(chi, hfig, normstr, 'raw');
