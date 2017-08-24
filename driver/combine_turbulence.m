@@ -12,6 +12,9 @@ close all;
    do_plot     =  1; % generate a comparison plot between the different estimates 
    do_mask     =  1; % NaN chi estimates using min dTdz, speed thresholds
 
+   test_tz_masking = 0; % TestMask with different values of Tz (below)
+   TzTestValues = [5e-4, 1e-3, 2e-3, 3e-3, 4e-3, 5e-3];
+
    % set thresholds for masking
    min_N2 = 1e-9;
    min_dTdz = 1e-4;
@@ -305,12 +308,14 @@ if(do_combine)
                  if do_plot, Histograms(chi, hfig, normstr, ['volume flushed' perlabel]); end
              end
 
-             if do_plot
+             if do_plot & test_tz_masking
+                 tic;
                  disp('... testing Tz masking  ...')
-                 TestMask(chi, abs(chi.dTdz), '<', [5e-4, 1e-3, 2e-3, 3e-3, 4e-3, 5e-3], 'Tz');
+                 TestMask(chi, abs(chi.dTdz), '<', TzTestValues, 'Tz');
                  subplot(221); title([ID ' | 1s estimates']);
                  print(gcf,['../pics/tz-masking-' ID '.png'],'-dpng','-r200','-painters')
                  disp('... finished testing Tz masking  ...')
+                 toc;
              end
 
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
