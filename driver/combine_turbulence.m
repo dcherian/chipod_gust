@@ -384,9 +384,9 @@ if(do_combine)
              print(gcf,['../pics/compare-mean-median-' ID(5:end) '.png'],'-dpng','-r200','-painters')
 
              if strcmpi(avgfn, 'mean')
-                 Turb = avg;
+                 Turb.(ID) = avg.(ID);
              else
-                 Turb = med;
+                 Turb.(ID) = med.(ID);
              end
          else
              Turb.(ID) = chi;
