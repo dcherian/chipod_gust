@@ -392,7 +392,7 @@ if(do_combine)
              ff = fields(chi);
 
              %% average data
-             disp('Running moving average')
+             disp(['Running ' num2str(avgwindow) 's moving ' avgfn])
              tic;
              for f = 1:length(ff)  % run through all fields in chi
                  if ( length(chi.(ff{f})) == length(chi.time) )
