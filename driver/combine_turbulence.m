@@ -468,9 +468,30 @@ if(do_combine)
    Turb.min_dTdz = min_dTdz;
    Turb.min_spd = min_spd;
    Turb.avgwindow = avgwindow;
+   Turb.avgfn = avgfn;
    Turb.min_inst_spd = min_inst_spd;
    Turb.min_N2 = min_N2;
    Turb.mask_spd = mask_spd_initial;
+
+   avg.do_mask = do_mask;
+   avg.mask_dTdz = mask_dTdz;
+   avg.min_dTdz = min_dTdz;
+   avg.min_spd = min_spd;
+   avg.avgwindow = avgwindow;
+   avg.avgfn = avgfn;
+   avg.min_inst_spd = min_inst_spd;
+   avg.min_N2 = min_N2;
+   avg.mask_spd = mask_spd_initial;
+
+   med.do_mask = do_mask;
+   med.mask_dTdz = mask_dTdz;
+   med.min_dTdz = min_dTdz;
+   med.min_spd = min_spd;
+   med.avgwindow = avgwindow;
+   med.avgfn = avgfn;
+   med.min_inst_spd = min_inst_spd;
+   med.min_N2 = min_N2;
+   med.mask_spd = mask_spd_initial;
 
    %---------------------add readme----------------------
    Turb.readme = {...
@@ -499,6 +520,13 @@ if(do_combine)
 
 %_____________________save combined structure______________________
    save([savedir '/Turb.mat'], 'Turb');
+   Turbbackup = Turb;
+   Turb = avg;
+   save([savedir '/Turb-avg.mat'], 'Turb');
+   Turb = med;
+   save([savedir '/Turb-mdn.mat'], 'Turb');
+   Turb = Turbbackup;
+
    if length(runname) ~= 0
        system(['cp ' savedir '/Turb.mat ' savedir ...
                '../combined/' runname '.mat']);
