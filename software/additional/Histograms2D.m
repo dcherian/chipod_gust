@@ -1,4 +1,4 @@
-function Histograms2D(chi, ID)
+function Histograms2D(chi, ID, avgfn)
 
     dt = (chi.time(2)-chi.time(1))*86400;
 
@@ -7,7 +7,7 @@ function Histograms2D(chi, ID)
     [counts, xbins, ybins, flag] = hc(chi.dTdz, log10(chi.chi));
     pcolor(xbins, ybins, counts); shading flat;
     xlabel('dT/dz'); ylabel('log_{10} \chi')
-    title([ID ' | ' num2str(dt) 's estimates'])
+    title([ID ' | ' num2str(dt) 's ' avgfn ' estimates'])
 
     ax(2) = subplot(222);
     [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.Kt));

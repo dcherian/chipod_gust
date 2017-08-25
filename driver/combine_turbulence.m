@@ -415,14 +415,16 @@ if(do_combine)
              avg.(ID) = ApplyMask(avg.(ID), abs(avg.(ID).dTdz), '<', min_dTdz, 'Tz');
              med.(ID) = ApplyMask(med.(ID), abs(med.(ID).dTdz), '<', min_dTdz, 'Tz');
 
-             clear hfig3
-             if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
-             Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
-             Histograms(avg.(ID), hfig3, 'pdf', 'avg')
-             Histograms(med.(ID), hfig3, 'pdf', 'mdn')
-             subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
-             subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
-             print(gcf,['../pics/compare-mean-median-' ID(5:end) '.png'],'-dpng','-r200','-painters')
+             if do_plot
+                 clear hfig3
+                 if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
+                 Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
+                 Histograms(avg.(ID), hfig3, 'pdf', 'avg')
+                 Histograms(med.(ID), hfig3, 'pdf', 'mdn')
+                 subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
+                 subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
+                 print(gcf,['../pics/compare-mean-median-' ID(5:end) '.png'],'-dpng','-r200','-painters');
+             end
 
              if strcmpi(avgfn, 'mean')
                  Turb.(ID) = avg.(ID);
@@ -436,12 +438,11 @@ if(do_combine)
          if do_plot
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
              Histograms(Turb.(ID), hfig2, 'pdf', ID);
+
+             % 2D histograms
+             Histograms2D(Turb.(ID), ID, avgfn)
+             print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
          end
-
-         % 2D histograms
-         Histograms2D(Turb.(ID), ID)
-         print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
-
       end
    end
 
