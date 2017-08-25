@@ -440,7 +440,7 @@ if(do_combine)
              Histograms(Turb.(ID), hfig2, 'pdf', ID);
 
              % 2D histograms
-             Histograms2D(Turb.(ID), ID, avgfn)
+             Histograms2D(Turb.(ID), ID(5:end), avgfn)
              print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
          end
       end
