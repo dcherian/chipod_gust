@@ -370,7 +370,7 @@ if(do_combine)
                  subplot(224); legend(gca, 'show'); title(ID(5:end));
 
                  print(gcf,['../pics/histograms-masking-' ID '.png'],'-dpng','-r200','-painters')
-                 savefig(gcf,['../pics/histograms-masking-' ID '.fig'])
+                 % savefig(gcf,['../pics/histograms-masking-' ID '.fig'])
              end
          end
 
