@@ -530,6 +530,8 @@ if(do_combine)
    if length(runname) ~= 0
        system(['cp ' savedir '/Turb.mat ' savedir ...
                '../combined/' runname '.mat']);
+       system(['cp ' savedir '/Turb-*.mat ' savedir ...
+               '../']);
    end
 end
 
