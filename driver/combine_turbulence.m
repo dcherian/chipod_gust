@@ -29,7 +29,7 @@ close all;
                   % sensed water volume
                   % 'm' for mooring, 'p' for pitot,
                   % '' to choose based on what was used in chi estimate
-   mask_flushing = 1; % mask so that chipod is always sensing fresh fluid
+   mask_flushing = 0; % mask so that chipod is always sensing fresh fluid
 
    avgwindow = 600; % averaging window in seconds
    avgfn = 'median'; % use median or means to "average" over avgwindow
