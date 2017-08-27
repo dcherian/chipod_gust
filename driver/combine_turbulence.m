@@ -399,9 +399,18 @@ if(do_combine)
              tic;
              for f = 1:length(ff)  % run through all fields in chi
                  if ( length(chi.(ff{f})) == length(chi.time) )
-                     if strcmpi(ff{f}, 'Kt') | strcmpi(ff{f}, 'Jq'), continue; end
-                     avg.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
-                     med.(ID).(ff{f}) = moving_median( chi.(ff{f}), ww, ww );
+                     if strcmpi(ff{f}, 'Kt') | strcmpi(ff{f}, 'Jq') | strcmpi(ff{f}, 'mask')
+                         continue;
+                     end
+
+                     if strcmpi(ff{f}, 'chi') | strcmpi(ff{f}, 'eps')
+                         avg.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                         med.(ID).(ff{f}) = moving_median( chi.(ff{f}), ww, ww );
+                     else
+                         % shouldn't take median of T_z etc!
+                         avg.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                         med.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                     end
                  end
              end
              toc;
