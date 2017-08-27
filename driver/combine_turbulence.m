@@ -499,6 +499,16 @@ if(do_combine)
                  end
              end
              toc;
+
+             if do_plot
+                 clear hfig3
+                 if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
+                 Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
+                 Histograms(Turb.(ID), hfig3, 'pdf', 'avg')
+                 subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
+                 subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
+                 print(gcf,['../pics/compare-mean-raw-' ID(5:end) '.png'],'-dpng','-r200','-painters');
+             end
          else
              Turb.(ID) = chi;
          end
@@ -534,6 +544,16 @@ if(do_combine)
          [Turb.(ID), Turb.(ID).stats.max_Kt_percentage] = ApplyMask(Turb.(ID), Turb.(ID).Kt, '>', max_Kt, 'max_Kt');
          [Turb.(ID), Turb.(ID).stats.max_Jq_percentage] = ApplyMask(Turb.(ID), abs(Turb.(ID).Jq), '>', max_Jq, 'max_Jq');
 
+         % if we switch signs in the space of one T_z sampling period, estimates are likely bad.
+         % ZeroCross = zeros(size(Turb.(ID).dTdz));
+         % ZeroCross(2:end) = sign(Turb.(ID).dTdz(1:end-1)) .* sign(Turb.(ID).dTdz(2:end)) == -1;
+         % ZeroCross = ZeroCross | abs([0, abs(diff(ZeroCross))]);
+         % Turb.(ID) = ApplyMask(Turb.(ID), ZeroCross, '=', 1, 'Tz 0-crossing');
+
+         % If really high Jq & T_z is sufficiently small, that's probably blowup too.
+         % Turb.(ID) = ApplyMask(Turb.(ID),  abs(Turb.(ID).Jq) > 5e3 & abs(Turb.(ID).dTdz) < 3*min_dTdz, ...
+         %                      '=', 1, ['Jq > 5e3 for Tz < ' num2str(3*min_dTdz)]);
+
          % noise floor on the second sensor is high. Let's NaN out the low-end
          % chi = 1e-8 is approx. where the processed distributions start to differ a lot.
          if sensor == 2
@@ -545,6 +565,56 @@ if(do_combine)
          if do_plot
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
              Histograms(Turb.(ID), hfig2, 'count', ID, ID);
+
+             % chi1 = ApplyMask(chiold, abs(chiold.dTdz), '<', 1e-3, 'T_z');
+             % chi2 = ApplyMask(chiold, abs(chiold.dTdz), '<', 2e-3, 'T_z');
+             % chi3 = ApplyMask(chiold, abs(chiold.dTdz), '<', 3e-4, 'T_z');
+
+             % co = get(gcf,'DefaultAxesColorOrder');
+             % co(2:end, :) = co(1:end-1, :);
+             % co(1, :) = [1, 1, 1]*0.75;
+             % set(gcf, 'DefaultAxesColorOrder', co);
+             % t0 = datenum(2014, 10, 8);
+             % t1 = datenum(2014, 10, 10, 12, 0, 0);
+             % tavg = 300;
+             % DebugPlots(hdaily, t0, t1, chiold, 'unmasked', 1)
+             % DebugPlots(hdaily, t0, t1, chi1, 'T_z > 1e-3', 1)
+             % DebugPlots(hdaily, t0, t1, chi2, 'T_z > 2e-3', 1)
+             % % DebugPlots(hdaily, t0, t1, chi3, 'T_z > 3e-4', 1)
+             % subplot(411); ylim([-1, 1]*5e-3)
+             % subplot(414); ylim([-3e4, 1e4])
+
+             % figure;
+             % subplot(211); hold on;
+             % times = [10:10:60]*60;
+             % kk = 1; i1 = [];
+             % for tavg=times
+             %     % i1 = IntegrateJq(t0, t1, chi3, tavg);
+             %     % i2 = IntegrateJq(t0, t1, chi1, tavg);
+             %     % i3 = IntegrateJq(t0, t1, chi2, tavg);
+             %     % plot([3e-4, 1e-3, 2e-3], [i1, i2, i3], 'displayname', ...
+             %     %      [num2str(tavg/60) 'm avg']);
+             %     i1(kk) = IntegrateJq(t0, t1, chi, tavg);
+             %     kk = kk+1;
+             % end
+             % plot(times/60, i1);
+
+             % legend('-dynamiclegend');
+             % xlim([2e-4, 2.5e-3])
+             % % xlabel('min dTdz')
+             % xlabel('averaging time period (min)')
+             % title('(\int J_q dt)/2.5d over Hudhud')
+             % subplot(212)
+             % bperiod = 2*pi./sqrt(chi.N2(chi.N2 > 0));
+             % it0 = find_approx(chi.time, t0);
+             % it1 = find_approx(chi.time, t1);
+             % histogram(bperiod(it0:it1)/60)
+             % xlim([0, 40])
+             % xlabel('2\pi/N minutes')
+
+             % nansum(chi.Jq(it0:it1)) * 1/((t1-t0)*86400)
+             % nansum(chiback.Jq(it0:it1)) * 1/((t1-t0)* 86400)
+             % nansum(chi3.Jq(it0:it1)) * 1/((t1-t0) * 86400)
 
              % daily average summary
              if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
@@ -653,11 +723,27 @@ end
 
 % Examples of using TestMask and DebugPlots to check masking
 % TestMask(chi, abs(chi.dTdz), '<', [1e-4, 3e-4, 1e-3], 'Tz');
-% t0 = datenum(2014, 01, 01);
-% t1 = datenum(2014, 03, 01);
-% DebugPlots([], t0, t1, chi, 'raw', 1)
-% chi1 = ApplyMask(chi, abs(chi.dTdz), '<', 3e-4, 'T_z');
-% DebugPlots([], t0, t1, chi1, 'T_z > 3e-4', 1)
+% t0 = time_range(1);
+% t1 = time_range(end);
+% tavg = 600; 86400;
+% % DebugPlots([], t0, t1, chi, 'raw', tavg)
+% % chi1 = ApplyMask(chi, abs(chi.dTdz), '<', 1e-3, 'T_z < 1e-3');
+% % chi2 = ApplyMask(chi, abs(chi.dTdz), '<', 2e-3, 'T_z < 2e-3');
+
+% % DebugPlots([], t0, t1, chi2, 'T_z > 2e-3', tavg)
+
+% % DebugPlots([], t0, t1, chi, '1s', tavg)
+% % DebugPlots([], t0, t1, avg.chi_mm1, '5 min avg', tavg/avgwindow)
+
+% figure;
+% DebugPlots([], t0, t1, med.chi_mm1, '5 min med', 1)
+% DebugPlots([], t0, t1, med.chi_mm1, '5 min med', 86400/avgwindow)
+
+% DebugPlots([], t0, t1, avgback.chi_mm1, '5 min old', 86400/avgwindow)
+% DebugPlots([], t0, t1, avg.chi_mm1, '5 min new', 86400/avgwindow)
+
+% DebugPlots([], t0, t1, Turb.chi_mm1, 'final', tavg/avgwindow)
+
 % load ../proc/temp.mat
 % load ../proc/Turb.mat
 
@@ -684,3 +770,50 @@ end
 %     print('-dpng', ['../pics/debug-' num2str(ii, '%02d') '.png']);
 %     ii=ii+1;
 % end
+
+
+% time_range(1) = datenum(2014, 10, 8);
+% time_range(2) = datenum(2014, 10, 14);
+
+% tp = interp1(T.time, T.T1Pt, chiold.time);
+% tt = [find_approx(T.time, time_range(1)): ...
+%       find_approx(T.time, time_range(2))];
+
+
+% chi = ApplyMask(chiold, abs(chiold.dTdz), '<', 5e-3/10, 'dTdz');
+% chi = ApplyMask(chiold, abs(chiold.N2), '<', 5e-7, 'dTdz');
+
+% chi1 = ApplyMask(chi, ...
+%                  (movstd(tp, 30) < 5e-3 & (abs(chi.dTdz) < 1e-3)), ...
+%                  '=', 1, 'T1Pt');
+
+% chi2 = ApplyMask(chiold, abs(chi1.dTdz), '<', 1e-3, 'T1Pt');
+
+% CreateFigure;
+% ax(1) = subplot(311);
+% semilogy(T.time(tt), (movstd(T.T1Pt(tt), 30) + movstd(flip(T.T1Pt(tt)), 30))/2);
+% datetick;
+% ax(2) = subplot(312);
+% plot(chi.time(tt), chi.dTdz(tt))
+% ylim([-1 1]*1e-3)
+% liney(0)
+% datetick;
+% ax(3) = subplot(313);
+% semilogy(chiold.time(tt), chiold.eps(tt), 'color', [1 1 1]*0.6);
+% hold on;
+% semilogy(chi1.time(tt), chi1.eps(tt));
+% % semilogy(chi2.time(tt), chi2.eps(tt));
+% datetick;
+% ylim([-8 2])
+% linkaxes(ax, 'x');
+% xlim(T.time([tt(1) tt(end)]))
+
+
+% tp = T.T1Pt(tt);
+% eps = chiold.eps(tt);
+% tz = chiold.dTdz(tt);
+
+% mask = eps > 1e-13;
+% figure; loglog(abs(tp(mask)), eps(mask), '.');
+
+% figure; plot(tp, tz, '.')
