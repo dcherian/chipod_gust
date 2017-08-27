@@ -427,6 +427,16 @@ if(do_combine)
              avg.(ID) = ApplyMask(avg.(ID), abs(avg.(ID).dTdz), '<', min_dTdz, 'Tz');
              med.(ID) = ApplyMask(med.(ID), abs(med.(ID).dTdz), '<', min_dTdz, 'Tz');
 
+             % if we switch signs in the space of one T_z sampling period, estimates are likely bad.
+             ZeroCross = zeros(size(avg.(ID).dTdz));
+             ZeroCross(2:end) = sign(avg.(ID).dTdz(1:end-1)) .* sign(avg.(ID).dTdz(2:end)) == -1;
+             avg.(ID) = ApplyMask(avg.(ID), ZeroCross, '=', 1, 'Tz 0-crossing');
+             med.(ID) = ApplyMask(med.(ID), ZeroCross, '=', 1, 'Tz 0-crossing');
+
+             % If really high Jq & T_z is sufficiently small, that's probably blowup too.
+             avg.(ID) = ApplyMask(avg.(ID),  abs(avg.(ID).Jq) > 5e3 & abs(avg.(ID).dTdz) < 3*min_dTdz, ...
+                                  '=', 1, ['Jq > 5e3 for Tz < ' num2str(3*min_dTdz)]);
+
              if do_plot
                  clear hfig3
                  if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
