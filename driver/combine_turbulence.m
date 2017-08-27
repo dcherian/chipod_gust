@@ -461,6 +461,13 @@ if(do_combine)
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
              Histograms(Turb.(ID), hfig2, 'pdf', ID);
 
+             % daily average summary
+             if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
+             t0 = time_range(1);
+             t1 = time_range(end);
+             tavg = 86400;
+             DebugPlots(hdaily, t0, t1, avg.(ID), ID(5:end), tavg/avgwindow)
+
              % 2D histograms
              Histograms2D(Turb.(ID), ID(5:end), avgfn)
              print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
@@ -483,6 +490,12 @@ if(do_combine)
 
        figure(hfstrat)
        print(gcf,['../pics/histograms-stratification.png'],'-dpng','-r200','-painters')
+
+       figure(hdaily)
+       subplot(511); title(['Daily averages of ' num2str(avgwindow/60) ' min ' avgfn 's']);
+       subplot(515); ylim([-1 1]*0.2 * max(ylim));
+       datetick('x', 'mmm-dd', 'keeplimits')
+       print(gcf,['../pics/daily-average-summary.png'],'-dpng','-r200','-painters')
    end
 
    Turb.do_mask = do_mask;
