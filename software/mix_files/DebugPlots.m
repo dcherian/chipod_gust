@@ -9,39 +9,43 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
 
     figure(hfig);
 
+    time = moving_average(chi.time(tind), ww, ww);
+
     try
         figure(hfig);
     catch ME
         CreateFigure;
     end
     ax(1) = subplot(511);
-    semilogy(time, chi.chi(tind), 'displayname', name)
+    semilogy(time, moving_average(chi.chi(tind), ww, ww), 'displayname', name)
     ylabel('\chi')
     Common()
 
     ax(2) = subplot(512);
-    plot(chi.time(tind), chi.dTdz(tind), 'displayname', name)
+    plot(time, moving_average(chi.dTdz(tind), ww, ww), 'displayname', name)
     hold on;
     plot(xlim, [0, 0], 'k--');
     ylabel('dT/dz')
     Common()
-    symlog(gca, 'y', 5e-3);
+    % symlog(gca, 'y', 5e-3);
 
     ax(3) = subplot(513);
     try
-        semilogy(time, chi.eps(tind), 'displayname', name)
+        semilogy(time, moving_average(chi.eps(tind), ww, ww), 'displayname', name)
     catch ME
-        semilogy(time, chi.eps1(tind), 'displayname', name)
+        semilogy(time, moving_average(chi.eps1(tind), ww, ww), 'displayname', name)
     end
     ylabel('\epsilon')
-    ylim([10.^[-7, -3]])
+    ylim([10.^[-10, -3]])
     Common()
 
     ax(4) = subplot(514);
     try
-        semilogy(chi.time(tind), chi.Kt(tind), 'displayname', name)
+        semilogy(time, moving_average(chi.Kt(tind), ww, ww), ...
+                 'displayname', name)
     catch ME
-        semilogy(chi.time(tind), chi.Kt1(tind), 'displayname', name)
+        semilogy(time, moving_average(chi.Kt1(tind), ww, ww), ...
+                 'displayname', name)
     end
     ylabel('K_t')
     ylim([10.^[-7, 0]])
@@ -49,11 +53,9 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
 
     ax(5) = subplot(515);
     try
-        plot(moving_average(chi.time(tind), ww, ww), ...
-             moving_average(chi.Jq(tind), ww, ww), 'displayname', name)
+        plot(time, moving_average(chi.Jq(tind), ww, ww), 'displayname', name)
     catch ME
-        plot(moving_average(chi.time(tind), ww, ww), ...
-             moving_average(-chi.Jq1(tind), ww, ww), 'displayname', name)
+        plot(time, moving_average(-chi.Jq1(tind), ww, ww), 'displayname', name)
     end
     ylabel('J_q^t')
     Common()
