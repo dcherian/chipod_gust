@@ -17,7 +17,7 @@ close all;
 
    % set thresholds for masking
    min_N2 = 1e-9;
-   min_dTdz = 1e-4;
+   min_dTdz = 1e-3;
    min_spd = 0.05;
    min_inst_spd = min_spd; % min instantaneous speed past sensor
    mask_dTdz = ''; % '' for none, 'm' for mooring, 'i' for internal
@@ -32,7 +32,6 @@ close all;
    mask_flushing = 0; % mask so that chipod is always sensing fresh fluid
 
    avgwindow = 600; % averaging window in seconds
-   avgfn = 'median'; % use median or means to "average" over avgwindow
 
    ChipodDepth = 30;
 
@@ -214,7 +213,7 @@ if(do_combine)
              Histograms(chi, hfig, normstr, 'raw');
 
              if ~exist('hfraw', 'var'), hfraw = CreateFigure; end
-             Histograms(chi, hfraw, 'pdf', ID(5:end));
+             Histograms(chi, hfraw, 'pdf', fix_underscore(ID(5:end)));
 
              clear hfstrat
              if ~exist('hfstrat', 'var')
@@ -278,48 +277,48 @@ if(do_combine)
              end
 
              % histograms for speed-based masking
-             % if do_plot & exist('../proc/temp.mat', 'file')
-             %     load ../proc/temp.mat
-             %     load ../input/vel_m.mat
-             %     CreateFigure;
+             if do_plot & exist('../proc/temp.mat', 'file')
+                 load ../proc/temp.mat
+                 load ../input/vel_m.mat
+                 CreateFigure;
 
-             %     dt = diff(T.time(1:2))*86400;
-             %     trange = [find_approx(T.time, time_range(1)):find_approx(T.time, time_range(2))];
-             %     subplot(211)
-             %     histogram(abs(T.a_vel_x(trange)), 'normalization' ,'pdf', ...
-             %               'displaystyle', 'stairs', 'linewidth', 1.5);
-             %     hold on;
-             %     histogram(hypot(T.a_vel_x(trange), T.a_vel_y(trange)), ...
-             %               'normalization' ,'pdf', 'displaystyle', 'stairs', 'linewidth', 1.5);
-             %     histogram(abs(T.a_vel_z(trange)), 'normalization' ,'pdf', ...
-             %               'displaystyle', 'stairs', 'linewidth', 1.5);
+                 dt = diff(T.time(1:2))*86400;
+                 trange = [find_approx(T.time, time_range(1)):find_approx(T.time, time_range(2))];
+                 subplot(211)
+                 histogram(abs(T.a_vel_x(trange)), 'normalization' ,'pdf', ...
+                           'displaystyle', 'stairs', 'linewidth', 1.5);
+                 hold on;
+                 histogram(hypot(T.a_vel_x(trange), T.a_vel_y(trange)), ...
+                           'normalization' ,'pdf', 'displaystyle', 'stairs', 'linewidth', 1.5);
+                 histogram(abs(T.a_vel_z(trange)), 'normalization' ,'pdf', ...
+                           'displaystyle', 'stairs', 'linewidth', 1.5);
 
-             %     trange2 = [find_approx(vel_m.time, time_range(1)):find_approx(vel_m.time, time_range(2))];
-             %     histogram(vel_m.spd(trange2), 'normalization' ,'pdf', ...
-             %               'displaystyle', 'stairs', 'linewidth', 1.5);
-             %     plot([1 1]*min_spd, ylim, 'k--');
-             %     xlim([-0.25 1]*0.7*max(vel_m.spd))
-             %     set(gca, 'XTick', sort([min_spd get(gca, 'XTick')]));
-             %     xlabel('m/s')
-             %     ylabel('PDF')
-             %     legend('|v_x|', '|v_x + v_y|', '|v_z|', 'background flow', 'min. spd criterion');
-             %     dt2 = diff(vel_m.time(1:2))*86400/60;
-             %     title([ID(5:end) ' | ' num2str(round(dt)) 's avg for v_* | ' ...
-             %            num2str(round(dt2)) 'minutes \Deltat for background'])
+                 trange2 = [find_approx(vel_m.time, time_range(1)):find_approx(vel_m.time, time_range(2))];
+                 histogram(vel_m.spd(trange2), 'normalization' ,'pdf', ...
+                           'displaystyle', 'stairs', 'linewidth', 1.5);
+                 plot([1 1]*min_spd, ylim, 'k--');
+                 xlim([-0.25 1]*0.7*max(vel_m.spd))
+                 set(gca, 'XTick', sort([min_spd get(gca, 'XTick')]));
+                 xlabel('m/s')
+                 ylabel('PDF')
+                 legend('|v_x|', '|v_x + v_y|', '|v_z|', 'background flow', 'min. spd criterion');
+                 dt2 = diff(vel_m.time(1:2))*86400/60;
+                 title([ID(5:end) ' | ' num2str(round(dt)) 's avg for v_* | ' ...
+                        num2str(round(dt2)) 'minutes \Deltat for background'])
 
-             %     subplot(212)
-             %     histogram(log10(chi.eps), 'normalization', 'pdf', 'displaystyle', 'stairs', 'linewidth', 1.5);
-             %     hold on;
-             %     histogram(log10(chi.eps(spdmask < min_spd)), ...
-             %               'normalization', 'pdf', 'displaystyle', 'stairs', 'linewidth', 1.5);
-             %     ylabel('PDF')
-             %     xlabel('log_{10} \epsilon')
-             %     xlim([-14 5])
-             %     legend('raw', ['background flow < ' num2str(min_spd) 'm/s']);
+                 subplot(212)
+                 histogram(log10(chi.eps), 'normalization', 'pdf', 'displaystyle', 'stairs', 'linewidth', 1.5);
+                 hold on;
+                 histogram(log10(chi.eps(spdmask < min_spd)), ...
+                           'normalization', 'pdf', 'displaystyle', 'stairs', 'linewidth', 1.5);
+                 ylabel('PDF')
+                 xlabel('log_{10} \epsilon')
+                 xlim([-14 5])
+                 legend('raw', ['background flow < ' num2str(min_spd) 'm/s']);
 
-             %     print(gcf,['../pics/velocity-masking-' ID(5:end) '.png'],'-dpng','-r200','-painters')
-             %     % savefig(gcf,['../pics/velocity-masking-' ID(5:end) '.fig'])
-             % end
+                 print(gcf,['../pics/velocity-masking-' ID(5:end) '.png'],'-dpng','-r200','-painters')
+                 % savefig(gcf,['../pics/velocity-masking-' ID(5:end) '.fig'])
+             end
 
              if mask_flushing
                  [chi, percentage] = ApplyMask(chi, badMotion, '=', 1, 'volume not being flushed');
@@ -338,17 +337,21 @@ if(do_combine)
              end
 
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
+             chi.stats.dTdz_mask_percentage = percentage;
              perlabel = [' -' num2str(percentage, '%.1f') '%'];
              if do_plot, Histograms(chi, hfig, normstr, ['|Tz| > ' num2str(min_dTdz, '%.1e') perlabel]); end
 
              [chi, percentage] = ApplyMask(chi, chi.N2, '<', min_N2, 'N2');
+             chi.stats.N2_mask_percentage = percentage;
              if percentage > 0.5
                  perlabel = [' -' num2str(percentage, '%.1f') '%'];
                  if do_plot, Histograms(chi, hfig, normstr, ['N2' perlabel]); end
              end
 
-             chi = ApplyMask(chi, chi.spd, '<', min_inst_spd, 'inst speed');
-             chi = ApplyMask(chi, spdmask, '<', min_spd, 'background flow');
+             [chi, percentage] = ApplyMask(chi, chi.spd, '<', min_inst_spd, 'inst speed');
+             chi.stats.inst_speed_mask_percentage = percentage;
+             [chi, percentage] = ApplyMask(chi, spdmask, '<', min_spd, 'background flow');
+             chi.stats.background_flow_mask_percentage = percentage;
 
              % additional Tz masking?
              if ~isempty(Tz)
@@ -360,6 +363,7 @@ if(do_combine)
                  Tzmask = interp1(Tz.time, Tz.Tz, chi.time);
                  [chi, percentage] = ApplyMask(chi, abs(Tzmask), '<', 1e-4, ...
                                                ['Additional Tz_' mask_dTdz]);
+                 chi.stats.additional_dTdz_mask_percentage = percentage;
                  perlabel = [' -' num2str(percentage, '%.1f') '%'];
                  if do_plot, Histograms(chi, hfig, normstr, ['Additional Tz_' mask_dTdz perlabel]); end
              end
@@ -367,13 +371,13 @@ if(do_combine)
              if do_plot
                  figure(hfig)
                  set(hfig, 'DefaultLegendBox', 'off');
-                 subplot(221); legend(gca, 'show'); title(ID(5:end));
-                 subplot(222); legend(gca, 'show'); title(ID(5:end));
-                 subplot(223); legend(gca, 'show'); title(ID(5:end));
-                 subplot(224); legend(gca, 'show'); title(ID(5:end));
+                 subplot(221); legend(gca, 'show'); title(fix_underscore(ID(5:end)));
+                 subplot(222); legend(gca, 'show'); title(fix_underscore(ID(5:end)));
+                 subplot(223); legend(gca, 'show'); title(fix_underscore(ID(5:end)));
+                 subplot(224); legend(gca, 'show'); title(fix_underscore(ID(5:end)));
 
                  print(gcf,['../pics/histograms-masking-' ID '.png'],'-dpng','-r200','-painters')
-                 % savefig(gcf,['../pics/histograms-masking-' ID '.fig'])
+                 savefig(gcf,['../pics/histograms-masking-' ID '.fig'])
              end
          end
 
@@ -399,18 +403,10 @@ if(do_combine)
              tic;
              for f = 1:length(ff)  % run through all fields in chi
                  if ( length(chi.(ff{f})) == length(chi.time) )
-                     if strcmpi(ff{f}, 'Kt') | strcmpi(ff{f}, 'Jq') | strcmpi(ff{f}, 'mask')
-                         continue;
-                     end
-
-                     if strcmpi(ff{f}, 'chi') | strcmpi(ff{f}, 'eps')
-                         avg.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
-                         med.(ID).(ff{f}) = moving_median( chi.(ff{f}), ww, ww );
-                     else
-                         % shouldn't take median of T_z etc!
-                         avg.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
-                         med.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
-                     end
+                     if strcmpi(ff{f}, 'Kt') | strcmpi(ff{f}, 'Jq'), continue; end
+                     Turb.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                 else
+                     Turb.(ID).(ff{f}) = chi.(ff{f});
                  end
              end
              toc;
@@ -418,48 +414,15 @@ if(do_combine)
              % recalculate using averaged quantities
              % if we average over a time period greater than
              % sampling period of dTdz, this estimate will differ!
-             avg.(ID).Kt = 0.5 * avg.(ID).chi ./ avg.(ID).dTdz.^2;
-             avg.(ID).Jq = -1025 .* 4200 .* avg.(ID).Kt .* avg.(ID).dTdz;
-
-             med.(ID).Kt = 0.5 * med.(ID).chi ./ med.(ID).dTdz.^2;
-             med.(ID).Jq = -1025 .* 4200 .* med.(ID).Kt .* med.(ID).dTdz;
-
-             avg.(ID) = ApplyMask(avg.(ID), abs(avg.(ID).dTdz), '<', min_dTdz, 'Tz');
-             med.(ID) = ApplyMask(med.(ID), abs(med.(ID).dTdz), '<', min_dTdz, 'Tz');
-
-             % if we switch signs in the space of one T_z sampling period, estimates are likely bad.
-             ZeroCross = zeros(size(avg.(ID).dTdz));
-             ZeroCross(2:end) = sign(avg.(ID).dTdz(1:end-1)) .* sign(avg.(ID).dTdz(2:end)) == -1;
-             avg.(ID) = ApplyMask(avg.(ID), ZeroCross, '=', 1, 'Tz 0-crossing');
-             med.(ID) = ApplyMask(med.(ID), ZeroCross, '=', 1, 'Tz 0-crossing');
-
-             % If really high Jq & T_z is sufficiently small, that's probably blowup too.
-             avg.(ID) = ApplyMask(avg.(ID),  abs(avg.(ID).Jq) > 5e3 & abs(avg.(ID).dTdz) < 3*min_dTdz, ...
-                                  '=', 1, ['Jq > 5e3 for Tz < ' num2str(3*min_dTdz)]);
-
-             if do_plot
-                 clear hfig3
-                 if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
-                 Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
-                 Histograms(avg.(ID), hfig3, 'pdf', 'avg')
-                 Histograms(med.(ID), hfig3, 'pdf', 'mdn')
-                 subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
-                 subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
-                 print(gcf,['../pics/compare-mean-median-' ID(5:end) '.png'],'-dpng','-r200','-painters');
-             end
-
-             if strcmpi(avgfn, 'mean')
-                 Turb.(ID) = avg.(ID);
-             else
-                 Turb.(ID) = med.(ID);
-             end
+             Turb.(ID).Kt = 0.5 * Turb.(ID).chi ./ Turb.(ID).dTdz.^2;
+             Turb.(ID).Jq = -1025 .* 4200 .* Turb.(ID).Kt .* Turb.(ID).dTdz;
          else
              Turb.(ID) = chi;
          end
 
          if do_plot
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
-             Histograms(Turb.(ID), hfig2, 'pdf', ID);
+             Histograms(Turb.(ID), hfig2, 'pdf', fix_underscore(ID));
 
              % daily average summary
              if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
@@ -472,16 +435,30 @@ if(do_combine)
              Histograms2D(Turb.(ID), ID(5:end), avgfn)
              print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
          end
+
+         % include statistics
+         Turb.(ID).stats.chimean = nanmean(Turb.(ID).chi);
+         Turb.(ID).stats.epsmean = nanmean(Turb.(ID).eps);
+         Turb.(ID).stats.Ktmean  = nanmean(Turb.(ID).Kt);
+         Turb.(ID).stats.Jqmean  = nanmean(Turb.(ID).Jq);
+         Turb.(ID).stats.chimedian = nanmedian(Turb.(ID).chi);
+         Turb.(ID).stats.epsmedian = nanmedian(Turb.(ID).eps);
+         Turb.(ID).stats.Ktmedian  = nanmedian(Turb.(ID).Kt);
+         Turb.(ID).stats.Jqmedian  = nanmedian(Turb.(ID).Jq);
+         Turb.(ID).stats.chistd = nanstd(Turb.(ID).chi);
+         Turb.(ID).stats.epsstd = nanstd(Turb.(ID).eps);
+         Turb.(ID).stats.Ktstd  = nanstd(Turb.(ID).Kt);
+         Turb.(ID).stats.Jqstd  = nanstd(Turb.(ID).Jq);
       end
    end
 
    if do_plot
        figure(hfig2)
-       subplot(221); title(['Final ' num2str(avgwindow/60) ' min ' avgfn]);
-       subplot(222); title(['Final ' num2str(avgwindow/60) ' min ' avgfn]);
+       subplot(221); title(['Final ' num2str(avgwindow/60) ' min mean']);
+       subplot(222); title(['Final ' num2str(avgwindow/60) ' min mean']);
 
        print(gcf,['../pics/histograms-final.png'],'-dpng','-r200','-painters')
-       % savefig(gcf,['../pics/histograms-final.fig'])
+       savefig(gcf,['../pics/histograms-final.fig'])
 
        figure(hfraw)
        subplot(221); title(['raw 1s estimates']);
@@ -507,26 +484,6 @@ if(do_combine)
    Turb.min_inst_spd = min_inst_spd;
    Turb.min_N2 = min_N2;
    Turb.mask_spd = mask_spd_initial;
-
-   avg.do_mask = do_mask;
-   avg.mask_dTdz = mask_dTdz;
-   avg.min_dTdz = min_dTdz;
-   avg.min_spd = min_spd;
-   avg.avgwindow = avgwindow;
-   avg.avgfn = avgfn;
-   avg.min_inst_spd = min_inst_spd;
-   avg.min_N2 = min_N2;
-   avg.mask_spd = mask_spd_initial;
-
-   med.do_mask = do_mask;
-   med.mask_dTdz = mask_dTdz;
-   med.min_dTdz = min_dTdz;
-   med.min_spd = min_spd;
-   med.avgwindow = avgwindow;
-   med.avgfn = avgfn;
-   med.min_inst_spd = min_inst_spd;
-   med.min_N2 = min_N2;
-   med.mask_spd = mask_spd_initial;
 
    %---------------------add readme----------------------
    Turb.readme = {...
@@ -555,12 +512,6 @@ if(do_combine)
 
 %_____________________save combined structure______________________
    save([savedir '/Turb.mat'], 'Turb');
-   Turbbackup = Turb;
-   Turb = avg;
-   save([savedir '/Turb-avg.mat'], 'Turb');
-   Turb = med;
-   save([savedir '/Turb-mdn.mat'], 'Turb');
-   Turb = Turbbackup;
 
    if length(runname) ~= 0
        system(['cp ' savedir '/Turb.mat ' savedir ...
@@ -572,121 +523,9 @@ end
 
 %_____________________comparison plot______________________
 if do_plot
-   
-   load([basedir '/proc/' runname '/Turb.mat']);
-   ff = fields(Turb);
-   ff = {ff{1:end-1}}'; % remove readme structure
-
-   fig = CreateFigure;
-    % fig = figure('Color',[1 1 1],'visible','on','Paperunits','centimeters',...
-    %         'Papersize',[30 20],'PaperPosition',[0 0 30 20])
-    
-         [ax, ~] = create_axes(fig, 4, 1, 0);
-      
-         col = get(groot,'DefaultAxesColorOrder');
-         col = cat(1, col, col./2, (1-col)/2+col); % colorscale extension
-         
-         a=1;
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})), continue; end
-            pj = f; p(pj) = plot(ax(a), Turb.(ff{f}).time, Turb.(ff{f}).chi, 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         t = text_corner(ax(a), ['\chi [K^2/s]'], 1);
-         set(ax(a), 'Yscale', 'log');
-         yl = [1e-10 1e-2];
-         ylim(ax(a), yl);
-         
-         a=2;
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})) == 1, continue; end
-            pj = f; p(pj) = plot(ax(a), Turb.(ff{f}).time, Turb.(ff{f}).eps, 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         t = text_corner(ax(a), ['\epsilon [m^2/s^3]'], 1);
-         set(ax(a), 'Yscale', 'log');
-         yl = [1e-10 1e-2];
-         ylim(ax(a), yl);
-         
-         
-         a=3;
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})) == 1, continue; end
-            pj = f; p(pj) = plot(ax(a), Turb.(ff{f}).time, Turb.(ff{f}).dTdz, 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         t = text_corner(ax(a), ['dTdz [C/m]'], 1);
-         yl = [-1e-1, 0.3];
-         ylim(ax(a), yl);
-         set(ax(a), 'XTickLabels', [])
-         plot(ax(a), xlim ,[0 0], 'k--')
-         axes(ax(a))
-         symlog('y', -3);
-
-
-         a=4;
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})) == 1, continue; end
-            pj = f; p(pj) = plot(ax(a), Turb.(ff{f}).time, Turb.(ff{f}).spd, 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         t = text_corner(ax(a), ['|u| [m/s]'], 1);
-         datetick(ax(a), 'keeplimits');
-         yl = [0 2];
-         ylim(ax(a), yl);
-
-         linkaxes(ax, 'x');
-
-   %---------------------histogram plots----------------------
-      squeeze_axes(ax, .8, 1)
-
-      pos = get(ax(1), 'Position');
-      axh(1) = axes('Position', [ pos(1)+pos(3) pos(2) 1-pos(3)-pos(1)-.01 pos(4)] );
-      
-      pos = get(ax(2), 'Position');
-      axh(2) = axes('Position', [ pos(1)+pos(3) pos(2) 1-pos(3)-pos(1)-.01 pos(4)] );
-
-         a=1;
-         hold(axh(a),'all');
-         yl = log10(get(ax(a), 'Ylim'));
-         bins = yl(1):diff(yl)/100:yl(2);
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})) == 1, continue; end
-            [Nchi,~] = histcounts( log10(Turb.(ff{f}).chi) , bins);
-            pj = f; p(pj) = plot(axh(a), Nchi , bins(1:end-1)+diff(bins(1:2)*.5), 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         ylim(axh(a), yl);
-         set(axh, 'Yticklabel', {}, 'Xticklabel', {})
-      
-         a=2;
-         hold(axh(a),'all');
-         yl = log10(get(ax(a), 'Ylim'));
-         bins = yl(1):diff(yl)/100:yl(2);
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})) == 1, continue; end
-            [Nchi,~] = histcounts( log10(Turb.(ff{f}).eps) , bins);
-            pj = f; p(pj) = plot(axh(a), Nchi , bins(1:end-1)+diff(bins(1:2)*.5), 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         ylim(axh(a), yl);
-         set(axh, 'Yticklabel', {}, 'Xticklabel', {})
-         
-
-   %---------------------legend----------------------
-      pos = get(ax(3), 'Position');
-      axl = axes('Position', [ pos(1)+pos(3) pos(2) 1-pos(3)-pos(1)-.01 pos(4)] );
-      hold(axl,'on');
-      
-
-         for f = 1:length(ff)
-            if ~isstruct(Turb.(ff{f})) == 1, continue; end
-            pj = f; p(pj) = plot(axl, [0 1] ,[0 1], 'color', [col(pj,:) 1], 'Linewidth', 1);
-         end
-         legend(p, ff);
-         set(axl, 'visible', 'off')
-         ylim(axl,[-1 -.5])
-
-
-   %---------------------save imagage----------------------
-
-   print(gcf,'../pics/Compare_Turb.png','-dpng','-r200','-painters')
-   % savefig(gcf,'../pics/Compare_Turb.fig')
-   
+    % moved this plotting function to a separate function so it can be run
+    % independently if needed.
+    plot_Turb  
 end
 
 
