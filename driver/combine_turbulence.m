@@ -443,7 +443,7 @@ if(do_combine)
              ff = fields(chi);
 
              %% average data
-             disp(['Running ' num2str(avgwindow) 's moving ' avgfn])
+             disp(['Running ' num2str(avgwindow) 's moving mean'])
              tic;
              for f = 1:length(ff)  % run through all fields in chi
                  if ( length(chi.(ff{f})) == length(chi.time) )
@@ -517,7 +517,7 @@ if(do_combine)
        print(gcf,['../pics/histograms-stratification.png'],'-dpng','-r200','-painters')
 
        figure(hdaily)
-       subplot(511); title(['Daily averages of ' num2str(avgwindow/60) ' min ' avgfn 's']);
+       subplot(511); title(['Daily averages of ' num2str(avgwindow/60) ' min mean s']);
        subplot(515); ylim([-1 1]*0.2 * max(ylim));
        datetick('x', 'mmm-dd', 'keeplimits')
        print(gcf,['../pics/daily-average-summary.png'],'-dpng','-r200','-painters')
@@ -530,7 +530,6 @@ if(do_combine)
    Turb.min_dTdz = min_dTdz;
    Turb.min_spd = min_spd;
    Turb.avgwindow = avgwindow;
-   Turb.avgfn = avgfn;
    Turb.min_inst_spd = min_inst_spd;
    Turb.min_N2 = min_N2;
 
