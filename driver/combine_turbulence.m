@@ -475,7 +475,7 @@ if(do_combine)
              t0 = time_range(1);
              t1 = time_range(end);
              tavg = 86400;
-             DebugPlots(hdaily, t0, t1, avg.(ID), ID(5:end), tavg/avgwindow)
+             DebugPlots(hdaily, t0, t1, Turb.(ID), ID(5:end), tavg/avgwindow)
 
              % 2D histograms
              Histograms2D(Turb.(ID), ID(5:end), 'mean')
