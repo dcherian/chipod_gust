@@ -26,7 +26,15 @@ close all;
                       % enough.
                       % screws the spectrum calculation...
 
+   % maximum values; anything greater is NaNed out
+   max_chi = 1e-3;
+   max_eps = 1e-2;
+   max_Kt = 1;
+   max_Jq = 1e4;
+
    avgwindow = 600; % averaging window in seconds
+   avgvalid = 30; % percent valid values in averaging window for avg to
+                  % be non-NaN
 
    % we always mask using speed & dTdz used to calculate chi.
    % the next two are for *additional* masking using a different
@@ -398,6 +406,12 @@ if(do_combine)
                  if do_plot, Histograms(chi, hfig, normstr, ['Additional Tz_' additional_mask_dTdz perlabel]); end
              end
 
+             % remove values greater than thresholds
+             [chi, chi.stats.max_chi_percentage] = ApplyMask(chi, chi.chi, '>', max_chi, 'max_chi');
+             [chi, chi.stats.max_eps_percentage] = ApplyMask(chi, chi.eps, '>', max_eps, 'max_eps');
+             [chi, chi.stats.max_Kt_percentage] = ApplyMask(chi, chi.Kt, '>', max_Kt, 'max_Kt');
+             [chi, chi.stats.max_Jq_percentage] = ApplyMask(chi, chi.Jq, '>', max_Jq, 'max_Jq');
+
              if do_plot
                  figure(hfig)
                  set(hfig, 'DefaultLegendBox', 'off');
@@ -434,7 +448,7 @@ if(do_combine)
              for f = 1:length(ff)  % run through all fields in chi
                  if ( length(chi.(ff{f})) == length(chi.time) )
                      if strcmpi(ff{f}, 'Kt') | strcmpi(ff{f}, 'Jq'), continue; end
-                     Turb.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww );
+                     Turb.(ID).(ff{f}) = moving_average( chi.(ff{f}), ww, ww , avgvalid);
                  else
                      Turb.(ID).(ff{f}) = chi.(ff{f});
                  end
