@@ -15,7 +15,7 @@ close all;
    test_tz_masking = 0; % TestMask with different values of Tz (below)
    TzTestValues = [5e-4, 1e-3, 2e-3, 3e-3, 4e-3, 5e-3];
 
-   save_fig    = 1; % save .fig files?
+   save_fig    = 0; % save .fig files?
 
    % set thresholds for masking
    min_N2 = 1e-9;
