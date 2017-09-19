@@ -53,7 +53,10 @@ close all;
 
    % which estimates should I process?
    do = ChooseEstimates(); % get defaults
-   do = ChooseEstimates(do, 'no_mm');
+   % EXAMPLE: turn off all mm estimates
+   % do = ChooseEstimates(do, 'no_mm');
+   % EXAMPLE: turn off mm1 specifically
+   % do.chi_mm1 = 0;
 
    % additional time ranges to NaN out as necessary
    % make an array that looks like
