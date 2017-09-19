@@ -15,23 +15,27 @@ close all;
    test_tz_masking = 0; % TestMask with different values of Tz (below)
    TzTestValues = [5e-4, 1e-3, 2e-3, 3e-3, 4e-3, 5e-3];
 
+   save_fig    = 1; % save .fig files?
+
    % set thresholds for masking
    min_N2 = 1e-9;
    min_dTdz = 1e-3;
    min_spd = 0.05;
    min_inst_spd = min_spd; % min instantaneous speed past sensor
-   mask_dTdz = ''; % '' for none, 'm' for mooring, 'i' for internal
-                    % in addition to whats in chi.dTdz
    mask_inst_spd = 1; % estimates are crappy if sensor isn't moving
                       % enough.
                       % screws the spectrum calculation...
-   mask_spd = ''; % masking such that background flow flushes
-                  % sensed water volume
-                  % 'm' for mooring, 'p' for pitot,
-                  % '' to choose based on what was used in chi estimate
-   mask_flushing = 0; % mask so that chipod is always sensing fresh fluid
 
    avgwindow = 600; % averaging window in seconds
+
+   % we always mask using speed & dTdz used to calculate chi.
+   % the next two are for *additional* masking using a different
+   % speed (or dTdz) estimate
+   additional_mask_spd = ''; % '' for none, 'm' for mooring, 'p' for pitot
+   additional_mask_dTdz = ''; % '' for none, 'm' for mooring, 'i' for internal
+
+   mask_flushing = 0; % mask so that chipod is always sensing fresh fluid
+                      % beta version! turned off by default
 
    ChipodDepth = 30;
 
@@ -46,6 +50,10 @@ close all;
    % if one sensor dies earlier, specify that time here.
    T1death = datenum(2060, 1, 1, 0, 0, 0); % chipod T1 or gustT T sensor
    T2death = datenum(2060, 1, 1, 0, 0, 0); % T2 sensor
+
+   % which estimates should I process?
+   do = ChooseEstimates(); % get defaults
+   do = ChooseEstimates(do, 'no_mm');
 
    % additional time ranges to NaN out as necessary
    % make an array that looks like
@@ -86,13 +94,13 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    end
 
 if do_mask
-    if mask_dTdz == 'm'
+    if additional_mask_dTdz == 'm'
         disp('additional masking using mooring dTdz')
         load([basedir 'input/dTdz_m.mat'])
         Tz = Tz_m;
         clear Tz_m;
 
-    elseif mask_dTdz == 'i'
+    elseif additional_mask_dTdz == 'i'
         disp('additional masking using internal dTdz')
         load([basedir 'input/dTdz_i.mat'])
         Tz = Tz_i;
@@ -100,8 +108,6 @@ if do_mask
     else
         Tz = [];
     end
-
-    mask_spd_initial = mask_spd;
 end
 
 %_____________________find all available chi data______________________
@@ -121,6 +127,11 @@ if(do_combine)
       if ~isempty(mat_test) & ~isempty(chi_test)
 
          ID = d(i).name(1:mat_test-1);
+         if ~do.(ID)
+             disp(['do.' ID ' is disabled!']);
+             continue;
+         end
+
          if isChipod
              if ID(end) == '1' | strcmpi(ID(end-3:end), '1_ic') % sensor T1
                  sensor = 1;
@@ -215,7 +226,6 @@ if(do_combine)
              if ~exist('hfraw', 'var'), hfraw = CreateFigure; end
              Histograms(chi, hfraw, 'pdf', fix_underscore(ID(5:end)));
 
-             clear hfstrat
              if ~exist('hfstrat', 'var')
                  hfstrat = CreateFigure;
                  shown_Tz = '';
@@ -232,20 +242,27 @@ if(do_combine)
 
          if do_mask
              % speed mask could change depending on estimate
-             if strcmpi(mask_spd_initial, '')
-                 mask_spd = ID(5);
-             end
+             mask_spd = ID(5);
 
              if mask_spd == 'm' & ~exist('vel_m', 'var')
                  load ../input/vel_m.mat
                  vel = vel_m;
-                 disp('masking using mooring speed');
              elseif mask_spd == 'p' & ~exist('vel_p', 'var')
                  load ../input/vel_p.mat
                  vel = vel_p;
-                 disp('masking using pitot speed');
              end
              spdmask = interp1(vel.time, vel.spd, chi.time);
+
+             if additional_mask_spd ~= ''
+                 if additional_mask_spd == 'm' & ~exist('vel_m', 'var')
+                     load ../input/vel_m.mat
+                     vel = vel_m;
+                 elseif additional_mask_spd == 'p' & ~exist('vel_p', 'var')
+                     load ../input/vel_p.mat
+                     vel = vel_p;
+                 end
+                 addspdmask = interp1(vel.time, vel.spd, chi.time);
+             end
 
              if mask_flushing
                  if ~exist(motionfile, 'file')
@@ -271,7 +288,7 @@ if(do_combine)
                      badMotion = make_flushing_mask(motion, mask_spd, vel, do_plot);
                      if do_plot
                          print(gcf, [basedir 'pics' filesep 'angles.png'], '-r200', '-painters', '-bestfit')
-                         % savefig(gcf, [basedir 'pics' filesep 'angles.fig'])
+                         if save_fig, savefig(gcf, [basedir 'pics' filesep 'angles.fig']); end
                      end
                  end
              end
@@ -336,6 +353,11 @@ if(do_combine)
                  toc;
              end
 
+             if mask_flushing
+                 chi = ApplyMask(chi, badMotion, '=', 1, 'volume not being flushed');
+                 if do_plot, Histograms(chi, hfig, normstr, 'volume flushed'); end
+             end
+
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
              chi.stats.dTdz_mask_percentage = percentage;
              perlabel = [' -' num2str(percentage, '%.1f') '%'];
@@ -353,19 +375,24 @@ if(do_combine)
              [chi, percentage] = ApplyMask(chi, spdmask, '<', min_spd, 'background flow');
              chi.stats.background_flow_mask_percentage = percentage;
 
+             if additional_mask_spd ~= ''
+                 [chi, percentage] = ApplyMask(chi, addspdmask, '<', min_spd, 'background flow');
+                 chi.stats.additional_background_flow_mask_percentage = percentage;
+             end
+
              % additional Tz masking?
              if ~isempty(Tz)
-                 if mask_dTdz == 'i'
+                 if additional_mask_dTdz == 'i'
                      % choose appropriate internal stratification for sensor
                      Tz.Tz = Tz.(['Tz' ID(7)']);
                  end
 
                  Tzmask = interp1(Tz.time, Tz.Tz, chi.time);
                  [chi, percentage] = ApplyMask(chi, abs(Tzmask), '<', 1e-4, ...
-                                               ['Additional Tz_' mask_dTdz]);
+                                               ['Additional Tz_' additional_mask_dTdz]);
                  chi.stats.additional_dTdz_mask_percentage = percentage;
                  perlabel = [' -' num2str(percentage, '%.1f') '%'];
-                 if do_plot, Histograms(chi, hfig, normstr, ['Additional Tz_' mask_dTdz perlabel]); end
+                 if do_plot, Histograms(chi, hfig, normstr, ['Additional Tz_' additional_mask_dTdz perlabel]); end
              end
 
              if do_plot
@@ -377,7 +404,7 @@ if(do_combine)
                  subplot(224); legend(gca, 'show'); title(fix_underscore(ID(5:end)));
 
                  print(gcf,['../pics/histograms-masking-' ID '.png'],'-dpng','-r200','-painters')
-                 savefig(gcf,['../pics/histograms-masking-' ID '.fig'])
+                 if save_fig, savefig(gcf,['../pics/histograms-masking-' ID '.fig']); end
              end
          end
 
@@ -414,7 +441,9 @@ if(do_combine)
              % recalculate using averaged quantities
              % if we average over a time period greater than
              % sampling period of dTdz, this estimate will differ!
-             Turb.(ID).Kt = 0.5 * Turb.(ID).chi ./ Turb.(ID).dTdz.^2;
+             Turb.(ID).Kt = 0.5 * Turb.(ID).chi ./ Turb.(ID).dTdz.^2 + ...
+                 sw_tdif(interp1(chi.time, Smean, Turb.(ID).time), ...
+                         Turb.(ID).T, ChipodDepth);
              Turb.(ID).Jq = -1025 .* 4200 .* Turb.(ID).Kt .* Turb.(ID).dTdz;
          else
              Turb.(ID) = chi;
@@ -422,7 +451,7 @@ if(do_combine)
 
          if do_plot
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
-             Histograms(Turb.(ID), hfig2, 'pdf', fix_underscore(ID));
+             Histograms(Turb.(ID), hfig2, 'pdf', fix_underscore(ID(5:end)));
 
              % daily average summary
              if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
@@ -432,8 +461,10 @@ if(do_combine)
              DebugPlots(hdaily, t0, t1, avg.(ID), ID(5:end), tavg/avgwindow)
 
              % 2D histograms
-             Histograms2D(Turb.(ID), ID(5:end), avgfn)
+             Histograms2D(Turb.(ID), ID(5:end), 'mean')
              print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
+
+             Histograms(Turb.(ID), hfig2, 'count', fix_underscore(ID(5:end)));
          end
 
          % include statistics
@@ -458,7 +489,7 @@ if(do_combine)
        subplot(222); title(['Final ' num2str(avgwindow/60) ' min mean']);
 
        print(gcf,['../pics/histograms-final.png'],'-dpng','-r200','-painters')
-       savefig(gcf,['../pics/histograms-final.fig'])
+       if save_fig, savefig(gcf,['../pics/histograms-final.fig']); end
 
        figure(hfraw)
        subplot(221); title(['raw 1s estimates']);
@@ -475,15 +506,16 @@ if(do_combine)
        print(gcf,['../pics/daily-average-summary.png'],'-dpng','-r200','-painters')
    end
 
+   Turb.hash = githash('driver/combine_turbulence.m');
    Turb.do_mask = do_mask;
-   Turb.mask_dTdz = mask_dTdz;
+   Turb.additional_mask_dTdz = additional_mask_dTdz;
+   Turb.additional_mask_spd = additional_mask_spd;
    Turb.min_dTdz = min_dTdz;
    Turb.min_spd = min_spd;
    Turb.avgwindow = avgwindow;
    Turb.avgfn = avgfn;
    Turb.min_inst_spd = min_inst_spd;
    Turb.min_N2 = min_N2;
-   Turb.mask_spd = mask_spd_initial;
 
    %---------------------add readme----------------------
    Turb.readme = {...
