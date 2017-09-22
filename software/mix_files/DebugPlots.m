@@ -39,9 +39,11 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
 
     ax(3) = subplot(413);
     try
-        semilogy(time, chi.Kt(tind), 'displayname', name)
+        semilogy(time, moving_average(chi.Kt(tind), ww, ww), ...
+                 'displayname', name)
     catch ME
-        semilogy(time, chi.Kt1(tind), 'displayname', name)
+        semilogy(time, moving_average(chi.Kt1(tind), ww, ww), ...
+                 'displayname', name)
     end
     ylabel('K_t')
     ylim([10.^[-7, 0]])
