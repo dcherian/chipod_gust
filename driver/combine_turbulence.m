@@ -480,8 +480,8 @@ if(do_combine)
        print(gcf,['../pics/histograms-stratification.png'],'-dpng','-r200','-painters')
 
        figure(hdaily)
-       subplot(511); title(['Daily averages of ' num2str(avgwindow/60) ' min mean s']);
-       subplot(515); ylim([-1 1]*0.2 * max(ylim));
+       subplot(411); title(['Daily averages of ' num2str(avgwindow/60) ' min mean s']);
+       subplot(414); ylim([-1 1]*0.2 * max(ylim));
        datetick('x', 'mmm-dd', 'keeplimits')
        print(gcf,['../pics/daily-average-summary.png'],'-dpng','-r200','-painters')
    end
