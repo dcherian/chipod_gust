@@ -7,8 +7,6 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
     i1 = find_approx(chi.time, t1, 1);
     tind = i0:i1;
 
-    figure(hfig);
-
     time = moving_average(chi.time(tind), ww, ww);
 
     try
@@ -16,20 +14,20 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
     catch ME
         CreateFigure;
     end
-    ax(1) = subplot(511);
-    semilogy(time, moving_average(chi.chi(tind), ww, ww), 'displayname', name)
-    ylabel('\chi')
-    Common()
+    % ax(1) = subplot(511);
+    % semilogy(time, moving_average(chi.chi(tind), ww, ww), 'displayname', name)
+    % ylabel('\chi')
+    % Common()
 
-    ax(2) = subplot(512);
+    ax(1) = subplot(411);
     plot(time, moving_average(chi.dTdz(tind), ww, ww), 'displayname', name)
     hold on;
     plot(xlim, [0, 0], 'k--');
     ylabel('dT/dz')
     Common()
-    symlog(gca, 'y', 5e-3);
+    % symlog(gca, 'y', 5e-3);
 
-    ax(3) = subplot(513);
+    ax(2) = subplot(412);
     try
         semilogy(time, moving_average(chi.eps(tind), ww, ww), 'displayname', name)
     catch ME
@@ -39,23 +37,23 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
     ylim([10.^[-10, -3]])
     Common()
 
-    ax(4) = subplot(514);
+    ax(3) = subplot(413);
     try
-        semilogy(time, moving_average(chi.Kt(tind), ww, ww), ...
-                 'displayname', name)
+        semilogy(time, chi.Kt(tind), 'displayname', name)
     catch ME
-        semilogy(time, moving_average(chi.Kt1(tind), ww, ww), ...
-                 'displayname', name)
+        semilogy(time, chi.Kt1(tind), 'displayname', name)
     end
     ylabel('K_t')
     ylim([10.^[-7, 0]])
     Common()
 
-    ax(5) = subplot(515);
+    ax(4) = subplot(414);
     try
-        plot(time, moving_average(chi.Jq(tind), ww, ww), 'displayname', name)
+        plot(time, ...
+             moving_average(chi.Jq(tind), ww, ww), 'displayname', name)
     catch ME
-        plot(time, moving_average(-chi.Jq1(tind), ww, ww), 'displayname', name)
+        plot(time, ...
+             moving_average(-chi.Jq1(tind), ww, ww), 'displayname', name)
     end
     ylabel('J_q^t')
     Common()
