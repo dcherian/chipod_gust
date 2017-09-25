@@ -33,24 +33,52 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
 
 if do_raw_proc
-   
    % generate temp.mat
    generate_temp( basedir, do_parallel, time_range)
 
-   %____________________create motion.mat file______________________
-
    load([basedir 'proc' filesep 'temp.mat']);
 
+   %____________________create motion.mat file______________________
    motion.chiangle = atan2(T.a_vel_y, T.a_vel_x) * 180/pi;
    motion.time = T.time;
    motion.cmp = T.cmp;
+   motion.AX = T.AX;
+   motion.AY = T.AY;
+   motion.AZ = T.AZ;
    motion.a_vel_x = T.a_vel_x;
    motion.a_vel_y = T.a_vel_y;
    motion.a_vel_z = T.a_vel_z;
+   motion.a_dis_x = T.a_dis_x;
+   motion.a_dis_y = T.a_dis_y;
+   motion.a_dis_z = T.a_dis_z;
+   motion.AXtilt = T.AXtilt;
+   motion.AYtilt = T.AYtilt;
+   motion.AZtilt = T.AZtilt;
+   motion.P = T.P;
+   motion.comment = '';
 
-   save([basedir 'proc' filesep 'motion.mat'], 'motion', '-v7.3');
+   save([basedir 'proc' filesep 'motion.mat'], '-struct', 'motion', '-v7.3');
 
+   %_____________________create TP.mat file_______________________
+   TP.T1Pt = T.T1Pt;
+   TP.T2Pt = T.T2Pt;
+   TP.T1Pvar = T.T1Pvar;
+   TP.T2Pvar = T.T2Pvar;
+   TP.time = T.time;
+   TP.comment = {'T*Pt : dT/dt from each sensor'; ...
+                 'T*Pvar : var(dT/dt) over 1s from each sensor'; ...
+                 'time : datenum time series'};
 
+   save([basedir 'proc' filesep 'TP.mat'], '-struct', 'TP', '-v7.3');
+
+   %_____________________create T.mat file________________________
+   Tnew.time = T.time;
+   Tnew.T1 = T.T1;
+   Tnew.T2 = T.T2;
+   Tnew.P = T.P;
+   Tnew.comment = '';
+
+   save([basedir 'proc' filesep 'T.mat'], 'Tnew', '-struct', '-v7.3');
 end
 
 %_____________________make multiple summary plots______________________
