@@ -36,8 +36,17 @@ function [] = chi_T_proc(basedir, rfid, varargin)
    % load header
    head = chi_get_calibration_coefs(basedir);
    data = chi_calibrate_all([basedir filesep 'raw' filesep rfid], head);
+
 %_____________________average on 1 sec intervalls______________________
    T = average_fields(data, 1);
+
+   % save var(TP) over 1s for masking in combine_turbulence
+   ndt = round(1/(diff(data.time_tp(1:2)) * 86400));
+   t1pvar = moving_var(data.T1Pt, ndt, ndt);
+   t2pvar = moving_var(data.T2Pt, ndt, ndt);
+
+   T.T1Pvar = t1pvar(1:end-1);
+   T.T2Pvar = t2pvar(1:end-1);
 
 %---------------------save data----------------------
    [~,~,~] =  mkdir(savedir);
