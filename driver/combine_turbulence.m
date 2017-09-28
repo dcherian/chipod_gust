@@ -53,6 +53,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
                       % beta version! turned off by default
    mask_ic_fit = 1; % mask so that 1 sec fits in the IC range are discarded
 
+   mask_tp = 0;
+
    ChipodDepth = 0;
 
    % normalization for *masking* histograms
@@ -411,6 +413,56 @@ if(do_combine)
                  disp('Setting chi to 1e-10 and epsilon to 1e-12 when they are 0.');
                  chi.chi(chi.chi == 0) = 1e-10;
                  chi.eps(chi.eps == 0) = 1e-12;
+
+                 % TP variance masking
+                 if do_plot & mask_tp
+                 tic; TP = load('../proc/TP.mat', 'T1Pvar', 'T2Pvar'); toc;
+                 TPHistogram(TP, iiTrange, abs(chi.dTdz) < min_dTdz, ['|T_z| < ' num2str(min_dTdz, '%.1e')])
+
+                 min_chi = 1e-10
+                 TPHistogram(TP, iiTrange, abs(chi.chi) < min_chi, ['\chi < ' num2str(min_chi, '%.1e')])
+
+                 trange = 900000*15 + [1:86400*25];
+                 nf = 256;
+
+                 trange = iiTrange;
+                 [s1,f1] = gappy_psd(TP.T1Pvar(trange), floor(length(trange)/100), 1, 100);
+                 [s2,f2] = gappy_psd(TP.T2Pvar(trange), floor(length(trange)/100), 1, 100);
+
+                 CreateFigure;
+                 hax(1) = subplot(4,2,[1,2]);
+                 semilogy(chi.time(trange), chi.chi(trange));
+                 datetick;
+                 ylabel(['\chi' fix_underscore(ID(5:end))])
+
+                 hax(2) = subplot(4,2,[3,4]);
+                 semilogy(T.time(trange), TP.T1Pvar(trange));
+                 hold on;
+                 semilogy(T.time(trange), TP.T2Pvar(trange));
+                 datetick;
+                 ylabel('var(TP)')
+                 legend('var(T1P)', 'var(T2P)')
+                 linkaxes(hax, 'x');
+
+                 hax(3) = subplot(4,2,[5,6]);
+                 semilogy(T.time(trange), TP.T1(trange));
+                 hold on;
+                 semilogy(T.time(trange), TP.T2(trange));
+                 datetick;
+                 ylabel('T')
+                 linkaxes(hax, 'x');
+
+                 subplot(4,2,7)
+                 loglog(f1, movmean(s1, nf)); hold on;
+                 loglog(f2, movmean(s2, nf));
+                 ylabel('PSD (TP)')
+                 xlabel('Freq (hz)')
+
+                 subplot(428); hold on;
+                 histogram(log10(TP.T1Pvar(trange)), 'normalization', 'pdf')
+                 histogram(log10(TP.T2Pvar(trange)), 'normalization', 'pdf')
+                 ylabel('PDF')
+                 xlabel('var(TP)')
              end
 
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
