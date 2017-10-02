@@ -551,16 +551,6 @@ if(do_combine)
                  end
              end
              toc;
-
-             if do_plot
-                 clear hfig3
-                 if ~exist('hfig3', 'var'), hfig3 = CreateFigure; end
-                 Histograms(chi, hfig3, 'pdf', ['1sec | ' ID])
-                 Histograms(Turb.(ID), hfig3, 'pdf', 'avg')
-                 subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
-                 subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
-                 print(gcf,['../pics/compare-mean-raw-' ID(5:end) '.png'],'-dpng','-r200','-painters');
-             end
          else
              Turb.(ID) = chi;
          end
@@ -595,6 +585,15 @@ if(do_combine)
 
          [Turb.(ID), Turb.(ID).stats.max_Kt_percentage] = ApplyMask(Turb.(ID), Turb.(ID).Kt, '>', max_Kt, 'max_Kt');
          [Turb.(ID), Turb.(ID).stats.max_Jq_percentage] = ApplyMask(Turb.(ID), abs(Turb.(ID).Jq), '>', max_Jq, 'max_Jq');
+
+         if do_plot
+             hfig3 = CreateFigure;
+             Histograms(chi, hfig3, 'pdf', ['1sec | ' fix_underscore(ID(5:end))])
+             Histograms(Turb.(ID), hfig3, 'pdf', 'avg')
+             subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
+             subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
+             print(gcf,['../pics/compare-mean-raw-' ID(5:end) '.png'],'-dpng','-r200','-painters');
+         end
 
          % if we switch signs in the space of one T_z sampling period, estimates are likely bad.
          % ZeroCross = zeros(size(Turb.(ID).dTdz));
