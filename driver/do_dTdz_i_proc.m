@@ -13,7 +13,7 @@ do_proc     = 1;  % do you actually want to do the processing
 do_plot     = 1;  % do you want to generate graphical output
 
 dt          = 60;    % sec bits of data for analysis
-do_P        = 0;     % use pressure instead of acceleration to get z 
+do_P        = 1;     % use pressure instead of acceleration to get z
 min_dz      = 0.1;   % minimum displacement
 
 % winters d'asaro options

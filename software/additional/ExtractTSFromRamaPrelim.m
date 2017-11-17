@@ -33,7 +33,11 @@ function [index1, index2] = ChooseDepthLevels(depth, ChipodDepth)
 
     index2 = find( (abs(-depth + ChipodDepth) <= 10) ...
                     & (ChipodDepth < depth));
-    index2 = index2(1);
+    if isempty(index2)
+        index2 = index1+1;
+    else
+        index2 = index2(1);
+    end
 
     assert(depth(index1) < ChipodDepth & depth(index2) > ChipodDepth, ...
            'Measurements don''t span Chipod depth!');

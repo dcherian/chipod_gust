@@ -45,12 +45,12 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
 
    %---------------------add manual flags----------------------
-    %pflag = pflag.c_T1(0);       % switch off T1 if bad
+    pflag = pflag.c_T1(0);       % switch off T1 if bad
     %pflag = pflag.c_T2(0);       % switch off T2 if bad
 
     %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
   
-    %pflag = pflag.c_vel_p(0);    % use pitot velocities 
+    pflag = pflag.c_vel_p(0);    % use pitot velocities
     pflag = pflag.c_vel_m(1);    % use mooring velocities
     pflag = pflag.c_Tzi(0);      % use local (interal) stratification
     pflag = pflag.c_Tzm(1);      % use mooring stratification
@@ -60,7 +60,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
     pflag.master.use_compass = 1; % if 0, assume chipod vane moves it
                                   % into the flow perfectly
 
-    %pflag.master.use_pres = 0; % set to 0, accelerometers are
+    pflag.master.use_pres = 1; % set to 0, accelerometers are
                                % working, else differentiate
                                % pressure to get speed past sensor
 
