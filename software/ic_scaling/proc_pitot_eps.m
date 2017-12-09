@@ -1,5 +1,5 @@
-function [] = proc_pitot_eps(basedir, rfid, varargin)
-%% [] = proc_pitot_eps(basedir, rfid, [spec_length], [f_range])
+    function [] = proc_pitot_eps(basedir, rfid, varargin)
+%% [] = proc_pitot_eps(basedir, rfid, [spec_length], [f_range], [save_spec])
 %     This function drives the epsilon processing of the Pitot-tube
 %     for a single raw-files 
 %
@@ -7,6 +7,7 @@ function [] = proc_pitot_eps(basedir, rfid, varargin)
 %        basedir      : unit directory
 %        rfid         : raw-file name 
 %        spec_length  : spectrum length [days]  (default 5min = 1/(24*12)) 
+%        save_spec    : shall I save the actual spectrogram (default 0 NO) 
 %
 %   created by: 
 %        Johannes Becherer
@@ -22,6 +23,11 @@ function [] = proc_pitot_eps(basedir, rfid, varargin)
       Peps.f_range = [.02 .05];
    else
       Peps.f_range = varargin{2};
+   end
+   if nargin < 5
+      save_spec = 0;
+   else
+      save_spec = varargin{3};
    end
 
 
@@ -58,11 +64,13 @@ function [] = proc_pitot_eps(basedir, rfid, varargin)
 
   dt = median( diff(data.time));
   DT = spec_length/2;      
-  data.U_lowpass   = movmean(  data.U , round(DT/dt) );
+  data.U_lowpass   = movmean(  data.U , round(DT/dt), 'omitnan' );
 
    % project in the direction of the mean speed;
-   data.U_projected = abs(data.U).*cos(angle(data.U)-angle(data.U_lowpass)); 
-
+   data.U_projected = abs(data.U).*cos(angle(data.U)-angle(data.U_lowpass));
+   
+   % apply low_pass to wipe out nan smaller than fitting cutoff
+    data.U_projected   = movmean(  data.U_projected , round(1/(24*3600*Peps.f_range(2)*4*dt)), 'omitnan' );
 
 %_____________________calculate spectrogram______________________
    [spec, spec_f, Peps.time] = fast_spectrogram(data.time, data.U_projected, spec_length, DT);
@@ -73,6 +81,19 @@ function [] = proc_pitot_eps(basedir, rfid, varargin)
 %_____________________normalize spectrum by ic-scaling______________________
    [ Peps.eps, Peps.var_eps, eps_f] = icscaling_velocity( Peps.time, spec_f, spec, Peps.time, Peps.vel, Peps.f_range);
 
+%_____________________save spectrogram______________________
+if save_spec % if you want to save the spectrogram for diagnostics
+   Spec.time   =  Peps.time;
+   Spec.eps_f  =  eps_f;
+   Spec.f      =  spec_f;
+   Spec.f_range=  Peps.f_range;
+   Spec.eps    =  Peps.eps;
+   Spec.U      =  Peps.vel;
+   
+   spec_dir     = [basedir filesep 'proc' filesep 'spec_pitot'  num2str(spec_length*24*3600) 'sec' filesep];
+   [~,~,~] =  mkdir(spec_dir);
+   save([spec_dir  'spec_pitot_' num2str(spec_length*24*3600) 'sec' savestamp], 'Spec');;
+end
 
 %---------------------save data----------------------
    [~,~,~] =  mkdir(savedir);

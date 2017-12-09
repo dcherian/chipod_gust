@@ -1,5 +1,5 @@
-function []  = chi_merge_and_avg(basedir, ddir, aw)
-%% []  = chi_merge_and_avg(basedir, dir, aw, [mask])
+function []  = chi_merge_and_avg(basedir, ddir, aw , time_lim)
+%% []  = chi_merge_and_avg(basedir, dir, aw, [time_lim])
 %     
 %     This function averages all idividual files in dir
 %     in to a single file called 
@@ -9,12 +9,16 @@ function []  = chi_merge_and_avg(basedir, ddir, aw)
 %        basedir  :  base directory of unit
 %        dir      :  sub directory of proc (e.g. temp, chi ...)
 %        aw       :  average width in sec (if 0 no averaging)
-%        mask     :  flag structure to mask data (default no mask)
+%        time_lim :  optional, time limits to cut the field
 %
 %   created by: 
 %        Johannes Becherer
 %        Tue Sep 20 16:28:51 PDT 2016
 %
+
+if nargin < 4 % if no time limits are set we use pratical no limits
+   time_lim = [datenum(1900,1,1) datenum(2100,1,1)];
+end
 
 if ~isdir([basedir 'proc' filesep ddir])
    error([ddir ' is not a directory in ' basedir])
@@ -90,15 +94,16 @@ end
    % find fields in avg
    Favg = fields(avg);
    for i =  1:length(Favg)
-    eval([char(Favg(i)) ' = avg.' char(Favg(i))]);
+      %eval([char(Favg(i)) ' = avg.' char(Favg(i))]);
+      eval([char(Favg(i)) ' =  time_lim_fields(avg.' char(Favg(i)) ', time_lim);']);
    end
 
    % save all fields in avg
    if length(Favg)==1
-      save([basedir 'proc' filesep ddir '.mat'], char(Favg(1)), '-v7.3'); 
+      save( sfid, char(Favg(1)), '-v7.3'); 
    elseif length(Favg)==2
-      save([basedir 'proc' filesep ddir '.mat'], char(Favg(1)), char(Favg(2)), '-v7.3'); 
-   else length(Favg)==2
-      save([basedir 'proc' filesep ddir '.mat'], char(Favg(1)), char(Favg(2)), char(Favg(3)), '-v7.3'); 
+      save( sffid, char(Favg(1)), char(Favg(2)), '-v7.3'); 
+   elseif length(Favg)==3
+      save( sfid, char(Favg(1)), char(Favg(2)), char(Favg(3)), '-v7.3'); 
    end
 
