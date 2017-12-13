@@ -171,10 +171,12 @@ if(do_combine)
          end
 
          if isChipod
-             if ID(end) == '1' | strcmpi(ID(end-3:end), '1_ic') % sensor T1
+             if ID(end) == '1' ...
+                         | (length(ID) > 3 & strcmpi(ID(end-3:end), '1_ic')) % sensor T1
                  sensor = 1;
              end
-             if ID(end) == '2' | strcmpi(ID(end-3:end), '2_ic') % sensor T1
+             if ID(end) == '2' ...
+                         | (length(ID) > 3 & strcmpi(ID(end-3:end), '2_ic')) % sensor T2
                  sensor = 2;
              end
          else
@@ -460,7 +462,8 @@ if(do_combine)
 
          if do_plot
              if ~exist('hfig2', 'var'), hfig2 = CreateFigure; end
-             Histograms(Turb.(ID), hfig2, 'pdf', (ID), (ID));
+
+             Histograms(Turb.(ID), hfig2, 'pdf', ID, ID);
 
              % daily average summary
              if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
