@@ -464,13 +464,13 @@ if(do_combine)
 
              % daily average summary
              if ~exist('hdaily', 'var'), hdaily = CreateFigure; end
-             t0 = time_range(1);
-             t1 = time_range(end);
+             t0 = chi.time(1);
+             t1 = chi.time(end);
              tavg = 86400;
-             DebugPlots(hdaily, t0, t1, Turb.(ID), ID(5:end), tavg/avgwindow)
+             DebugPlots(hdaily, t0, t1, Turb.(ID), ID, tavg/avgwindow)
 
              % 2D histograms
-             Histograms2D(Turb.(ID), ID(5:end), 'mean')
+             Histograms2D(Turb.(ID), ID, 'mean')
              print(gcf,['../pics/histograms-2D-' ID '.png'],'-dpng','-r200','-painters')
          end
 
