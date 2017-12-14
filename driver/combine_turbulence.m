@@ -277,8 +277,6 @@ if(do_combine)
          % save unmasked chi structure for later use
          chiold = chi;
 
-         chiold = chi;
-
          if do_plot
              hfig = CreateFigure;
              Histograms(chi, hfig, normstr, ID, 'raw');
