@@ -607,11 +607,10 @@ if(do_combine)
 
          if do_plot
              hfig3 = CreateFigure;
-             Histograms(chi, hfig3, 'pdf', ['1sec | ' fix_underscore(ID(5:end))])
-             Histograms(Turb.(ID), hfig3, 'pdf', 'avg')
-             subplot(221); title([ID ' | ' num2str(avgwindow) 's estimates']);
-             subplot(222); title([ID ' | ' num2str(avgwindow) 's estimates']);
-             print(gcf,['../pics/compare-mean-raw-' ID(5:end) '.png'],'-dpng','-r200','-painters');
+             Histograms(chi, hfig3, 'pdf', ['1sec raw | ' ID])
+             Histograms(Turb.(ID), hfig3, 'pdf', ['avg ' num2str(avgwindow)])
+             subplot(221); title([ID 'raw vs. final avg.']);
+             print(gcf,['../pics/compare-mean-raw-' ID '.png'],'-dpng','-r200','-painters');
          end
 
          % if we switch signs in the space of one T_z sampling period, estimates are likely bad.
