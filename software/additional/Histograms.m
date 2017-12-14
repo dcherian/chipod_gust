@@ -62,7 +62,7 @@ function myhist(var, bins, normstr, ID, legendtext)
     if strcmp(legendtext,'raw')   
         color = [0 0 0];
         lw = 2;
-    elseif strcmp(legendtext(2:3),'Tz')   
+    elseif findstr(legendtext,'|Tz|')
         color = [1 0 0];
         lw = 2;
     else
