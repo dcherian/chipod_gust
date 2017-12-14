@@ -73,6 +73,15 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    CP.pflag.master.winters_dasaro = 1;
 
+   CP.pflag = CP.pflag.c_T2(0);
+   CP.pflag = CP.pflag.c_vel_p(0);
+   CP.pflag = CP.pflag.c_Tzi(0);
+
+   CP.nantimes{1} = [datenum(2014, 08, 24, 0, 45, 0), datenum(2014, 08, 24, 1, 0, 0)];
+   CP.nantimes{2} = [datenum(2014, 07, 06, 0, 0, 0), datenum(2014, 07, 07, 0, 0, 0);
+                     datenum(2014, 08, 02, 00, 00, 0), datenum(2014, 08, 03, 00, 00, 0);
+                     datenum(2014, 08, 09, 05, 45, 0), datenum(2014, 08, 09, 06, 15, 0);
+                     datenum(2014, 08, 25, 0, 0, 0), datenum(2014, 08, 27, 0, 0, 0)];
 
 %_____________________do everything______________________
 CP
