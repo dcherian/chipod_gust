@@ -90,15 +90,15 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
        pflag = pflag.auto_set(basedir);
       %---------------------add manual flags----------------------
        %pflag = pflag.c_T1(0);       % switch off T1 if bad
-       %pflag = pflag.c_T2(0);       % switch off T2 if bad
+       pflag = pflag.c_T2(0);       % switch off T2 if bad
 
        %pflag = pflag.c_ic(1);       % switch on ic processing (default off)
        %pflag = pflag.c_vc(0);       % switch off viscous convective processing (default on)
        %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
      
-       %pflag = pflag.c_vel_p(0);    % use pitot velocities 
+       pflag = pflag.c_vel_p(0);    % use pitot velocities
        %pflag = pflag.c_vel_m(0);    % use mooring velocities 
-       %pflag = pflag.c_Tzi(0);      % use local (interal) stratification 
+       pflag = pflag.c_Tzi(0);      % use local (interal) stratification
        %pflag = pflag.c_Tzm(0);      % use mooring stratification 
        pflag = pflag.make_cons();     % make sub-flags consistent with master flags
 
