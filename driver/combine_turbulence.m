@@ -40,8 +40,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
                   % be non-NaN
 
    % deglitching parameters
-   deglitch_window = avgwindow; % in seconds
-   deglitch_nstd = 2; % n std. dev. threshold
+   deglitch_window = 180; % in seconds
+   deglitch_nstd = 3; % n std. dev. threshold
 
    % we always mask using speed & dTdz used to calculate chi.
    % the next two are for *additional* masking using a different
@@ -229,8 +229,6 @@ if(do_combine)
          catch ME
              Smean = 35*ones(size(chi.time));
          end
-         rho = sw_pden(Smean, chi.T, ChipodDepth, 0);
-         cp = sw_cp(Smean, chi.T, ChipodDepth);
 
          %___________________NaN out after sensor death______________________
          if sensor == 1 % sensor T1 or gusT T
@@ -274,7 +272,10 @@ if(do_combine)
          end
 
          chi.Kt = 0.5 * chi.chi ./ chi.dTdz.^2;
-         chi.Jq = -rho .* cp .* chi.Kt .* chi.dTdz;
+         chi.Jq = -1025 .* 4200 .* chi.Kt .* chi.dTdz;
+
+         % save unmasked chi structure for later use
+         chiold = chi;
 
          chiold = chi;
 
