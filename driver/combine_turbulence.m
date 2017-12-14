@@ -792,10 +792,12 @@ end
 
 % Examples of using TestMask and DebugPlots to check masking
 % TestMask(chi, abs(chi.dTdz), '<', [1e-4, 3e-4, 1e-3], 'Tz');
-% t0 = time_range(1);
-% t1 = time_range(end);
-% tavg = 600; 86400;
-% % DebugPlots([], t0, t1, chi, 'raw', tavg)
+% t0 = datenum(2014, 03, 16);
+% t1 = datenum(2014, 03, 16, 05, 0, 0);
+% tavg = 1; 86400;
+% DebugPlots([], t0, t1, chiold, 'raw', tavg)
+% DebugPlots(gcf, t0, t1, chi, 'deglitched', tavg)
+
 % % chi1 = ApplyMask(chi, abs(chi.dTdz), '<', 1e-3, 'T_z < 1e-3');
 % % chi2 = ApplyMask(chi, abs(chi.dTdz), '<', 2e-3, 'T_z < 2e-3');
 
