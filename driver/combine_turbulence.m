@@ -555,6 +555,8 @@ if(do_combine)
              Turb.(ID) = chi;
          end
 
+         % Turb.int = Turb.(ID);
+
          % reapply dTdz filter
          % (because we divide by this dTdz for Kt, Jq)
          Turb.(ID) = ApplyMask(Turb.(ID), abs(Turb.(ID).dTdz), '<', min_dTdz, 'avg dTdz');
@@ -582,6 +584,23 @@ if(do_combine)
              sw_tdif(interp1(chi.time, Smean, Turb.(ID).time), ...
                      Turb.(ID).T, ChipodDepth);
          Turb.(ID).Jq = -1025 .* 4200 .* Turb.(ID).Kt .* Turb.(ID).dTdz;
+
+         % load ../input/dTdz_i.mat
+         % Turb.int.dTdz = interp1(Tz_i.time, Tz_i.(['Tz' num2str(sensor)]), Turb.(ID).time);
+         % Turb.int = ApplyMask(Turb.int, abs(Turb.int.dTdz), '<', min_dTdz, 'avg dTdz');
+
+         % Turb.int.Kti = 0.5 * Turb.int.chi ./ Turb.int.dTdz.^2 + ...
+         %     sw_tdif(interp1(chi.time, Smean, Turb.int.time), ...
+         %             Turb.int.T, ChipodDepth);
+         % Turb.int.Jqi = -1025 .* 4200 .* Turb.int.Kti .* Turb.int.dTdz;
+
+         % hfi = CreateFigure;
+         % Histograms(Turb.(ID), hfi, 'pdf', 'Tz_m')
+         % Histograms(Turb.int, hfi, 'pdf', 'Tz_i')
+
+         % hfi2 = CreateFigure;
+         % DebugPlots(hfi2, time_range(1), time_range(2), Turb.(ID), 'moor', 12*3600/avgwindow)
+         % DebugPlots(hfi2, time_range(1), time_range(2), Turb.int, 'int', 12*3600/avgwindow)
 
          [Turb.(ID), Turb.(ID).stats.max_Kt_percentage] = ApplyMask(Turb.(ID), Turb.(ID).Kt, '>', max_Kt, 'max_Kt');
          [Turb.(ID), Turb.(ID).stats.max_Jq_percentage] = ApplyMask(Turb.(ID), abs(Turb.(ID).Jq), '>', max_Jq, 'max_Jq');
