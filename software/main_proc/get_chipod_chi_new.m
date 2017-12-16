@@ -219,13 +219,15 @@ for b=1:n_iterations
         stats.n_freq=length(f_range);
         chi=6*tdif*integrate_new(min(b_freq),max(b_freq),b_freq,b_spec);
     else
+        % fit has failed. f_stop < f_start because chi, epsilon are tiny.
+        % likely that there is nothing happening!
         stats.k_start=NaN;
         stats.k_stop=NaN;
         stats.f_start=NaN;
         stats.f_stop=NaN;
         stats.n_freq=NaN;
         b_spec=NaN;
-        chi=NaN;
+        chi=0;
     end
 
     % Now estimate epsilon from chi:
