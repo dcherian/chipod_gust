@@ -3,8 +3,18 @@ function [] = DebugPlots(hfig, t0, t1, chi, name, ww)
     if ~exist('ww', 'var'), ww = 1; end
     if isempty(hfig), hfig = gcf(); end
 
-    i0 = find_approx(chi.time, t0, 1);
-    i1 = find_approx(chi.time, t1, 1);
+    if isempty(t0)
+        t0 = chi.time(1);
+        i0 = 1;
+    else
+        i0 = find_approx(chi.time, t0, 1);
+    end
+    if isempty(t1)
+        t1 = chi.time(end);
+        i1 = length(chi.time);
+    else
+        i1 = find_approx(chi.time, t1, 1);
+    end
     tind = i0:i1;
 
     time = moving_average(chi.time(tind), ww, ww);
