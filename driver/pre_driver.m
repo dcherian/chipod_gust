@@ -41,7 +41,7 @@ close all;
 
 %_____________________ebob 2013 NRL mooring data__________
    NRLid = '5'; % which NRL mooring?
-   ebobctdname = ['../../../ancillary/ctd/NRL' NRLid 'SP.mat'];
+   ebobctdname = ['../../../ancillary/ctd/NRL' NRLid 'SP-deglitched.mat'];
    ebobadcpname = ['../../../ancillary/adcp/NRL' NRLid '.mat'];
    buoydepth = 72;
 
