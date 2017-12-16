@@ -25,9 +25,9 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 11; % exact value from calibration file
                         % (no sign changes!)
-   DeployDecl = 0; % at deployment location
+   DeployDecl = -1.76; % at deployment location
    CorvallisDecl = 15+27/60; % at corvallis
 
    % chipod location (positive North, East & Down)
