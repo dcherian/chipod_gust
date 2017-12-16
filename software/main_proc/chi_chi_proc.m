@@ -144,3 +144,20 @@ thermistor_cutoff_frequency  = 32;
 
    end
 
+   % useful debugging plot
+   % keyboard
+   % figure;
+   % ax(1) = subplot(311)
+   % plot(T.time, T.T)
+   % ylabel('T')
+   % datetick;ax(2) = subplot(312)
+   % plot(Tp.time, Tp.tp)
+   % ylabel('Tp')
+   % datetick;
+   % ax(3) = subplot(313)
+   % semilogy(chi.time, chi.chi)
+   % hold on;
+   % semilogy(chi.time, chi.eps)
+   % legend('\chi', '\epsilon')
+   % datetick;
+   % linkaxes(ax, 'x')
