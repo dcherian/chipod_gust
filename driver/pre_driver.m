@@ -194,12 +194,15 @@ if do_dTdz_m
             chi_generate_dTdz_m_oldmoorfiles(moor,ChipodDepth,sdir);
       else
 
-          load(ebobctdname);
+          ebob = load(ebobctdname);
           % eval(['pres = MMP_NRL' NRLid 'A;']);
           % eval(['temp = MMT_NRL' NRLid 'A;']);
           % eval(['salt = MMS_NRL' NRLid 'A;']);
           % eval(['time = MMTime_NRL' NRLid 'A;']);
 
+          if isfield(ebob, 'ebob')
+              ebob = ebob.ebob;
+          end
           pres = ebob.pres';
           salt = ebob.salt';
           temp = ebob.temp';
