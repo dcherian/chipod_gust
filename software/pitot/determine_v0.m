@@ -1,4 +1,5 @@
-function [] = determine_v0( basedir, do_v0_self, do_v0_adcp, do_plot, do_vel_p, time_range, use_T, use_press, vis )
+function [] = determine_v0( basedir, do_v0_self, do_v0_adcp, do_plot, do_vel_p, time_range, cal_time_range, use_T )
+
 %% [] = determine_v0( basedir, do_v0_self, do_v0_adcp, do_plot, do_vel_p, time_range )
 %     
 %     This function is meant to determine V0 the pitot voltage off set based on different methods
@@ -19,20 +20,19 @@ function [] = determine_v0( basedir, do_v0_self, do_v0_adcp, do_plot, do_vel_p, 
 %        Johannes Becherer
 %        Tue Nov 28 14:26:43 PST 2017
 
-if nargin < 8
-    use_press = 1;
-end
-
 if nargin < 7
     use_T = 1;
+end
+
+if nargin < 8
+    use_press = 1;
 end
 
 if nargin < 9
     vis = 'on';
 end
 
-
-cal_time_range = time_range ; 
+% cal_time_range = time_range ;
 
 fidf    = [basedir '/proc/P_fit.mat'];
 fids    = [basedir '/proc/P_self.mat'];

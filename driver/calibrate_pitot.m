@@ -11,10 +11,10 @@ close all;
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
    do_raw_data = 0;     % do the averaging of the raw-data (1) or skip (0) if done before
-   do_v0_self  = 0;     % detremine V0 based on a min of the averaged signal (self contained)
-   do_v0_adcp  = 0;     % detremin V0 based on a fit against reference velocity (adcp) data
+   do_v0_self  = 1;     % detremine V0 based on a min of the averaged signal (self contained)
+   do_v0_adcp  = 1;     % detremin V0 based on a fit against reference velocity (adcp) data
    do_plot     = 0;     % generate some figures in ../pics/ to compare the different velocity estimates
-   do_vel_p    = 0;     % which calibration should be used for vel_p (0 none (default), 1: adcp, 2: self)
+   do_vel_p    = 1;     % which calibration should be used for vel_p (0 none (default), 1: adcp, 2: self)
 
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
@@ -30,18 +30,18 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
  % get time limits from whoAmI;
    [TL] =   whoAmI_timeLimits(basedir);
    time_range      = TL.pitot;
- % set manually
-   %time_range(1)  = datenum(2000, 1, 1, 0, 0, 0);
-   %time_range(2)  = datenum(2030, 1, 1, 0, 0, 0);
+   % set manually
+   % This is the time range where the pitot sensor is returning
+   % good data
+   time_range(1)  = datenum(2014, 12, 6, 13, 30, 0);
+   time_range(2)  = datenum(2016, 03, 01, 0, 0, 0);
 
    % calibrate in time range different from valid data time range?
    % if so set limits here just as for time_range.
    % by default, both time ranges are equal.
-   cal_time_range = time_range;
+   cal_time_range = [datenum(2015, 04, 19); datenum(2015, 05, 01)];
 
-
-
-   % which temperature sensor to use T1 (1) or if T1 is broken T2 (2) ;  
+   % which temperature sensor to use T1 (1) or if T1 is broken T2 (2) ;
    % for gusTs (0)
    
    if isfield(TL, 'T1')     % chipod
@@ -102,7 +102,5 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 %_____________________determine V0______________________
    
    if do_v0_self | do_v0_adcp | do_plot
-      determine_v0( basedir, do_v0_self, do_v0_adcp, do_plot, do_vel_p, time_range, use_T, use_press )
+       determine_v0( basedir, do_v0_self, do_v0_adcp, do_plot, do_vel_p, time_range, cal_time_range, use_T )
    end
-
- 
