@@ -25,14 +25,14 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
-                        % (no sign changes!)
-   DeployDecl = 0; % at deployment location
+   CompassOffset = 8; % exact value from calibration file
+                      % (no sign changes!)
+   DeployDecl = -1.76; % at deployment location
    CorvallisDecl = 15+27/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 85.5; ChipodLat = 5; ChipodDepth = 56;
-   
+   ChipodLon = 85.5; ChipodLat = 6.5; ChipodDepth = 71;
+
    % name of old mooring file
    if use_old_moor_file
        ChipodDeployment = 'tao14_140';      % change deployment name
@@ -40,10 +40,10 @@ close all;
    end
 
 %_____________________ebob 2013 NRL mooring data__________
-   NRLid = '1'; % which NRL mooring?
+   NRLid = '2'; % which NRL mooring?
    ebobctdname = ['../../../ancillary/ctd/NRL' NRLid '-corrected.mat'];
    ebobadcpname = ['../../../ancillary/adcp/NRL' NRLid '.mat'];
-   buoydepth = 44;
+   buoydepth = 39;
 
    if ChipodDepth - buoydepth < 15
        disp('First chipod from surface');
@@ -78,6 +78,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         % if header.mat exists, it will read it
         head = chi_get_calibration_coefs(basedir);
 
+        head.coef.T2P(2) = 0.095364;
         % will create header.mat file if necessary
         % if header_p.mat exists, it will read it
         W  = chi_get_calibration_coefs_pitot(basedir);
@@ -152,9 +153,9 @@ if do_vel_m
 
     adcp = load(ebobadcpname);
     moor.time = adcp.date_time;
-    moor.u = adcp.uu'/100;
-    moor.v = adcp.vv'/100;
-    moor.depth = adcp.depth_levels';
+    moor.u = adcp.uu(1:end-6,:)'/100;
+    moor.v = adcp.vv(1:end-6, :)'/100;
+    moor.depth = adcp.depth_levels(1:end-6)';
 
     if ~exist('../proc/T_m.mat', 'file')
         error('Process mooring stratification first. Need chipod depth');
