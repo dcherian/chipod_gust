@@ -58,3 +58,4 @@ SP = Ps; % slope for the static pressure
 Vcal = Vraw - (T-T0)*ST - (P-P0)*SP - V0;
 Pdym = Vcal*Sp;
 spd    = sign(Pdym).*sqrt(2/1025*abs(Pdym)); 
+spd(spd < 0) = nan;
