@@ -599,6 +599,6 @@ end
 %     ax = DebugRawData(T, tt-overlap, t1, Turb, nantimes);
 %     ax(1).Title.String = ['i = ' num2str(ii) ' | ' ax(1).Title.String];
 
-%     print('-dpng', ['../pics/debug-' num2str(ii) '.png']);
+%     print('-dpng', ['../pics/debug-' num2str(ii, '%02d') '.png']);
 %     ii=ii+1;
 % end

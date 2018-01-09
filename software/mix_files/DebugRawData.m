@@ -38,7 +38,8 @@ function [ax] = DebugRawData(T, t0, t1, Turb, nantimes)
 
     fnames = fieldnames(Turb);
     for ff = 1:length(fnames)
-        if ~strcmpi(fnames{ff}(1:3), 'chi') | strcmpi(fnames{ff}(end-1:end), 'ic')
+
+        if strcmpi(fnames{ff}(end-1:end), 'ic') | ~isstruct(Turb.(fnames{ff}))
             continue;
         end
 
@@ -66,16 +67,16 @@ function [ax] = DebugRawData(T, t0, t1, Turb, nantimes)
     datetick('keeplimits');
     ylabel(axx(1), 'W')
     ylabel(axx(2), 'dT/dz')
-    ylim(axx(2), [-1 1]*7e-3);
-    axx(2).YTick = [-7, -5, -3, -1, 1, 3, 5, 7] * 1e-3;
+    %ylim(axx(2), [-1 1]*7e-3);
+    % axx(2).YTick = [-7, -5, -3, -1, 1, 3, 5, 7] * 1e-3;
     plot(axx(2), xlim(axx(2)), [1 1]*1e-3, 'k--', ...
          xlim(axx(2)), [1 1]*-1e-3, 'k--', ...
          xlim(axx(2)), [0 0], 'k--');
 
     % 0-crossings of dT/dz
-    sgn = sign(chi.dTdz(Turbtind));
-    tind0cross = Turbtind(abs(diff(sgn)) > 0);
-    Mark0Cross(ax, chi.time(tind0cross));
+    % sgn = sign(chi.dTdz(Turbtind));
+    % tind0cross = Turbtind(abs(diff(sgn)) > 0);
+    %    Mark0Cross(ax, chi.time(tind0cross));
 
     axes(ax(1)); title('minor ticks = 0-crossings of dT/dz');
 
