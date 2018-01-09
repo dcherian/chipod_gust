@@ -4,7 +4,11 @@ head = chi_get_calibration_coefs(basedir);
 
 % will create header.mat file if necessary
 % if header_p.mat exists, it will read it
-W  = chi_get_calibration_coefs_pitot(basedir);
+try
+    W  = chi_get_calibration_coefs_pitot(basedir);
+catch ME
+    warning('Could not load pitot calibration')
+end
 
 format long;
 disp(' ')
@@ -24,8 +28,15 @@ disp('----- Compass')
 disp('First element might have been corrected for declination.')
 head.coef.CMP'
 
+
 disp(' ')
-disp('----- Pitot')
-W
+disp('----- Pressure')
+head.coef.P'
+
+if exist('W', 'var')
+    disp(' ')
+    disp('----- Pitot')
+    W
+end
 
 format short;
