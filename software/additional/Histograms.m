@@ -6,10 +6,10 @@ function Histograms(chi, hfig, normstr, ID, legendtext)
     if ~exist('hfig', 'var') | isempty(hfig), hfig = figure; end
 
     nbins = 300;
-    chibins = linspace(-12, -3, nbins);
-    epsbins = linspace(-12, -2, nbins);
-    ktbins  = linspace(-8, 1, nbins);
-    jqbins  = linspace(-3, 4, nbins/2);
+    chibins = linspace(-12, -1, nbins);
+    epsbins = linspace(-12, 1, nbins);
+    ktbins  = linspace(-8, 3, nbins);
+    jqbins  = linspace(-3, 6, nbins/2);
 
     figure(hfig)
     hfig.Position(3) = 2000;
@@ -21,13 +21,13 @@ function Histograms(chi, hfig, normstr, ID, legendtext)
     myhist(chi.chi, chibins, normstr, ID, legendtext)
     hold on;
     xlabel('log_{10} \chi')
-    xlim([-12, -4])
+    xlim([-12, -1])
     ylabel(normstr)
 
     hax(2) = subplot(222);
     set(gca, 'color', 'none')
     myhist(chi.eps, epsbins, normstr, ID, legendtext)
-    xlim([-12, -2])
+    xlim([-12, 1])
     xlabel('log_{10} \epsilon')
     ylabel(normstr)
     hold on;
@@ -35,7 +35,7 @@ function Histograms(chi, hfig, normstr, ID, legendtext)
     hax(3) = subplot(223);
     set(gca, 'color', 'none')
     myhist(chi.Kt, ktbins, normstr, ID, legendtext)
-    xlim([-8, 2])
+    xlim([-8, 3])
     hold on;
     xlabel('log_{10} K_T')
     ylabel(normstr)
@@ -43,7 +43,7 @@ function Histograms(chi, hfig, normstr, ID, legendtext)
     hax(4) = subplot(224);
     set(gca, 'color', 'none')
     myhist(abs(chi.Jq), jqbins, normstr, ID, legendtext)
-    xlim([-5, 4.5])
+    xlim([-5, 6])
     hold on;
     xlabel('log_{10} |J_q|')
     ylabel(normstr)
