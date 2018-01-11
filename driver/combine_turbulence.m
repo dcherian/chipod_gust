@@ -448,6 +448,13 @@ if(do_combine)
          % (because we divide by this dTdz for Kt, Jq)
          Turb.(ID) = ApplyMask(Turb.(ID), abs(Turb.(ID).dTdz), '<', min_dTdz, 'avg dTdz');
 
+         % Tz 0-crossing filter
+         % range = [-5:5] + 4812; Turb.(ID).dTdz(range)
+         sTz = movprod(sign(Turb.(ID).dTdz), 2, 'omitnan');
+         sTz1 = flip(movprod(sign(flip(Turb.(ID).dTdz, 2)), 2, 'omitnan'));
+         Tz0Cross = ((sTz == -1) | (sTz1 == -1));
+         Turb.(ID) = ApplyMask(Turb.(ID), Tz0Cross, '=', 1, 'Tz 0-crossing');
+
          % recalculate using averaged quantities
          % if we average over a time period greater than
          % sampling period of dTdz, this estimate will differ!
