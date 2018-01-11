@@ -68,6 +68,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    T1death = datenum(2060, 1, 1, 0, 0, 0); % chipod T1 or gustT T sensor
    T2death = datenum(2060, 1, 1, 0, 0, 0); % T2 sensor
 
+   % mooring velocity measurement death
+   adcpdeath = datenum(2060, 1, 1, 0, 0, 0); % current meter dies here :(
 
 
 %_________ which estimates should I process?_______________________
@@ -250,6 +252,16 @@ if(do_combine)
                      chi.eps(death:end) = NaN;
                      chi.T(death:end) = NaN;
                  end
+             end
+         end
+
+         if ~isPitotEstimate
+             death = find(chi.time > adcpdeath, 1, 'first')
+             if ~isempty(death)
+                 disp(['NaNing out after mooring velocity died on ' datestr(adcpdeath)]);
+                 chi.chi(death:end) = NaN;
+                 chi.eps(death:end) = NaN;
+                 chi.T(death:end) = NaN;
              end
          end
 
