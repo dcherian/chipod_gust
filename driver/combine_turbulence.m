@@ -462,8 +462,22 @@ if(do_combine)
 
          % Tz 0-crossing filter
          % range = [-5:5] + 4812; Turb.(ID).dTdz(range)
-         sTz = movprod(sign(Turb.(ID).dTdz), 2, 'omitnan');
-         sTz1 = flip(movprod(sign(flip(Turb.(ID).dTdz, 2)), 2, 'omitnan'));
+         try
+             sTz = movprod(sign(Turb.(ID).dTdz), 2, 'omitnan');
+             sTz1 = flip(movprod(sign(flip(Turb.(ID).dTdz, 2)), 2, 'omitnan'));
+         catch ME
+             sgn = sign(abs(Turb.(ID).dTdz) - 1e-3);
+             sgnflip = sign(flip(Turb.(ID).dTdz, 2));
+             sTz = [sgn(1:end-1) .* sgn(2:end) 1];
+             sTz1 = flip([1 sgnflip(1:end-1) .* sgnflip(2:end)], 2);
+
+             % debugging plots
+             % Tz0Cross = ((sTz == -1) | (sTz1 == -1) | (abs(Turb.(ID).dTdz) < 1e-3));
+             % Tz2 = Turb.(ID).dTdz; Tz2(Tz0Cross) = nan;
+             % plot(Turb.(ID).time, Turb.(ID).dTdz); hold on;
+             % plot(Turb.(ID).time, Tz2, 'b-')
+             % liney([-1e-3, 1e-3, 0])
+         end
          Tz0Cross = ((sTz == -1) | (sTz1 == -1));
          Turb.(ID) = ApplyMask(Turb.(ID), Tz0Cross, '=', 1, 'Tz 0-crossing');
 
