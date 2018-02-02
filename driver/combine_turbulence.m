@@ -21,8 +21,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    save_fig    = 0; % save .fig files?
 
    % set thresholds for masking
-   min_N2 = 1e-9;
-   min_dTdz = 1e-3;
+   min_N2 = 1e-6;
+   min_dTdz = 3e-3;
    min_spd = 0.05;
    min_inst_spd = min_spd; % min instantaneous speed past sensor
    mask_inst_spd = 1; % estimates are crappy if sensor isn't moving
