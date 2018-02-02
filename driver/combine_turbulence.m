@@ -98,9 +98,9 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
        %pflag = pflag.c_vel_m(0);    % use mooring velocities 
        %pflag = pflag.c_Tzi(0);      % use local (interal) stratification 
        %pflag = pflag.c_Tzm(0);      % use mooring stratification 
-      pflag = pflag.make_cons();     % make sub-flags consitent with master flags 
+       pflag = pflag.make_cons();     % make sub-flags consistent with master flags
 
-
+       pflag.status;
 
 %_____________ additional time ranges to NaN out as necessary________________
    % make an array that looks like
