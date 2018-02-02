@@ -405,6 +405,21 @@ if(do_combine)
                  chi.stats.IC_fit_mask_percentage = percentage;
                  perlabel = [' -' num2str(percentage, '%.1f') '%'];
                  if do_plot, Histograms(chi, hfig, normstr, (ID), ['remove IC fits' perlabel]); end
+
+                 % figure; hold on;
+                 % histogram(log10(chi.eps(chi.kstop < chi.ki)));
+                 % histogram(log10(chi.eps(kstop < ki)));
+                 % legend('saved kstop < saved ki', 'estimated kstop < estimated ki')
+                 % xlabel('log_{10} \epsilon')
+                 % ylabel('count')
+
+                 % figure;
+                 % subplot(121); plot(log10(kstart), log10(chi.kstart), '.'); line45; title('kstart')
+                 % subplot(122); plot(log10(kstop), log10(chi.kstop), '.'); line45; title('kstop')
+
+                 % figure;hold on;h=histogram(log10(kb));histogram(log10(kb2), h.BinEdges)
+                 % figure;hold on;h=histogram(log10(ki));histogram(log10(chi.ki), h.BinEdges)
+                 % figure; plot(log10(kb), log10(chi.kb), '.'); line45; xlabel('est k_b'); ylabel('saved k_b')
              end
 
              % this has to be here, else you'll screw up setting
@@ -795,11 +810,12 @@ end
 
 % Examples of using TestMask and DebugPlots to check masking
 % TestMask(chi, abs(chi.dTdz), '<', [1e-4, 3e-4, 1e-3], 'Tz');
-% t0 = datenum(2014, 03, 16);
+% t0 = datenum(2014, 01, 16);
 % t1 = datenum(2014, 03, 16, 05, 0, 0);
 % tavg = 1; 86400;
-% DebugPlots([], t0, t1, chiold, 'raw', tavg)
-% DebugPlots(gcf, t0, t1, chi, 'deglitched', tavg)
+% DebugPlots([], t0, t1, chi, 'raw', tavg)
+% chi_noic = ApplyMask(chi, ki < kstop, '=', 0, 'IC fit');
+% DebugPlots(gcf, t0, t1, chi_noic, 'noic', tavg)
 
 % % chi1 = ApplyMask(chi, abs(chi.dTdz), '<', 1e-3, 'T_z < 1e-3');
 % % chi2 = ApplyMask(chi, abs(chi.dTdz), '<', 2e-3, 'T_z < 2e-3');
