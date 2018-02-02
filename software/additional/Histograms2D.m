@@ -10,14 +10,14 @@ function Histograms2D(chi, ID, avgfn)
     title([ID ' | ' num2str(dt) 's ' avgfn ' estimates'])
 
     ax(2) = subplot(222);
-    [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.Kt));
-    pcolor(xbins, ybins, counts); shading flat;
-    xlabel('dT/dz'); ylabel('log_{10} K_T')
-
-    ax(3) = subplot(223);
     [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.eps));
     pcolor(xbins, ybins, counts); shading flat;
     xlabel('dT/dz'); ylabel('log_{10} \epsilon')
+
+    ax(3) = subplot(223);
+    [counts, xbins, ybins] = hc(chi.dTdz, log10(chi.Kt));
+    pcolor(xbins, ybins, counts); shading flat;
+    xlabel('dT/dz'); ylabel('log_{10} K_T')
 
     ax(4) = subplot(224);
     [counts, xbins, ybins] = hc(chi.dTdz, log10(abs(chi.Jq)));
