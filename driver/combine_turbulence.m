@@ -631,12 +631,6 @@ if(do_combine)
              print(gcf,['../pics/compare-mean-raw-' ID '.png'],'-dpng','-r200','-painters');
          end
 
-         % if we switch signs in the space of one T_z sampling period, estimates are likely bad.
-         % ZeroCross = zeros(size(Turb.(ID).dTdz));
-         % ZeroCross(2:end) = sign(Turb.(ID).dTdz(1:end-1)) .* sign(Turb.(ID).dTdz(2:end)) == -1;
-         % ZeroCross = ZeroCross | abs([0, abs(diff(ZeroCross))]);
-         % Turb.(ID) = ApplyMask(Turb.(ID), ZeroCross, '=', 1, 'Tz 0-crossing');
-
          % If really high Jq & T_z is sufficiently small, that's probably blowup too.
          % Turb.(ID) = ApplyMask(Turb.(ID),  abs(Turb.(ID).Jq) > 5e3 & abs(Turb.(ID).dTdz) < 3*min_dTdz, ...
          %                      '=', 1, ['Jq > 5e3 for Tz < ' num2str(3*min_dTdz)]);
