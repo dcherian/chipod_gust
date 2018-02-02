@@ -51,6 +51,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    mask_flushing = 0; % mask so that chipod is always sensing fresh fluid
                       % beta version! turned off by default
+   mask_ic_fit = 1; % mask so that 1 sec fits in the IC range are discarded
 
    ChipodDepth = 0;
 
@@ -366,6 +367,38 @@ if(do_combine)
              if mask_flushing
                  chi = ApplyMask(chi, badMotion, '=', 1, 'volume not being flushed');
                  if do_plot, Histograms(chi, hfig, normstr, (ID), 'volume flushed'); end
+             end
+
+             if isempty(ic_test) & mask_ic_fit
+                 % are we fitting in the IC range with 1sec data?
+                 nu = sw_visc(chi.S, chi.T, chi.depth);
+                 tdif = sw_tdif(chi.S, chi.T, chi.depth);
+                 kb = (chi.eps./(nu .* tdif.^2)).^(0.25)/2/pi;
+                 ki = 0.01366*kb.*sqrt(tdif./nu);
+                 [~, freq] = fast_psd(zeros(100,1) ,100/2, 100);
+                 fmax = 14; % really 15, but use closest even number
+                 f_start = 4 * chi.spd; % again closest even number
+                 f_start(f_start < freq(1)) = freq(1);
+                 f_stop = floor((kb/2) .* chi.spd);
+                 f_stop(f_stop > fmax) = fmax;
+                 f_stop(f_stop > max(freq)) = max(freq);
+                 kstart = ceil(f_start)./chi.spd;
+                 kstop = f_stop./chi.spd;
+
+                 if do_plot
+                     CreateFigure; hold on;
+                     histogram(log10(chi.eps));
+                     histogram(log10(chi.eps(ki < kstop)))
+                     histogram(log10(chi.eps(ki < kstart)))
+                     xticks([-15:5]); xlim([-15, 5]); xlabel('log_{10} \epsilon'); ylabel('count')
+                     legend('raw', 'k_i < k_{stop}', 'k_i < k_{start}')
+                     print(gcf, [basedir 'pics' filesep 'ic_fit_filtering.png'], '-r200', '-painters', '-bestfit')
+                 end
+
+                 [chi, percentage] = ApplyMask(chi, ki < kstop, '=', 0, 'IC fit');
+                 chi.stats.IC_fit_mask_percentage = percentage;
+                 perlabel = [' -' num2str(percentage, '%.1f') '%'];
+                 if do_plot, Histograms(chi, hfig, normstr, (ID), ['remove IC fits' perlabel]); end
              end
 
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
