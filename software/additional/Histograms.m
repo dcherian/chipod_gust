@@ -32,12 +32,26 @@ function Histograms(chi, hfig, normstr, ID, legendtext)
     ylabel(normstr)
     hold on;
 
+    if (chi.time(11) - chi.time(10))*86400 < 2
+        nt = 600;
+        % 1 sec data. average Kt, Jq
+        chival = moving_average(chi.chi, nt, nt);
+        dTdz = moving_average(chi.dTdz, nt, nt);
+        Kt = 0.5 * chival ./ dTdz;
+        Jq = -1025 .* 4200 .* Kt .* dTdz;
+        prefix = '10 min avg';
+    else
+        Kt = chi.Kt;
+        Jq = chi.Jq;
+        prefix = '';
+    end
+
     hax(3) = subplot(223);
     set(gca, 'color', 'none')
     myhist(chi.Kt, ktbins, normstr, ID, legendtext)
     xlim([-8, 3])
     hold on;
-    xlabel('log_{10} K_T')
+    xlabel([prefix 'log_{10} K_T'])
     ylabel(normstr)
 
     hax(4) = subplot(224);
@@ -45,7 +59,7 @@ function Histograms(chi, hfig, normstr, ID, legendtext)
     myhist(abs(chi.Jq), jqbins, normstr, ID, legendtext)
     xlim([-5, 6])
     hold on;
-    xlabel('log_{10} |J_q|')
+    xlabel([prefix 'log_{10} |J_q|'])
     ylabel(normstr)
 end
 
