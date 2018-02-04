@@ -402,6 +402,17 @@ if(do_combine)
                  if do_plot, Histograms(chi, hfig, normstr, (ID), ['remove IC fits' perlabel]); end
              end
 
+             % this has to be here, else you'll screw up setting
+             % ki=nan when chi.chi == 0
+             nchi0 = sum(chi.chi == 0);
+             if nchi0 > 0
+                 disp(['WARNING: chi = 0 for ' num2str(nchi0) ' (' ...
+                       num2str(nchi0/length(chi.chi)*100) '%) instants.'])
+                 disp('Setting chi to 1e-10 and epsilon to 1e-12 when they are 0.');
+                 chi.chi(chi.chi == 0) = 1e-10;
+                 chi.eps(chi.eps == 0) = 1e-12;
+             end
+
              [chi, percentage] = ApplyMask(chi, abs(chi.dTdz), '<', min_dTdz, 'Tz');
              chi.stats.dTdz_mask_percentage = percentage;
              perlabel = [' -' num2str(percentage, '%.1f') '%'];
