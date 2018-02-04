@@ -480,6 +480,8 @@ if(do_combine)
              tic;
              chi.chi = 10.^deglitch(log10(chi.chi), dw, deglitch_nstd, 'b');
              chi.eps = 10.^deglitch(log10(chi.eps), dw, deglitch_nstd, 'b');
+             chi.chi(isnan(chi.eps)) = nan;
+             chi.eps(isnan(chi.chi)) = nan;
              toc;
 
              % get list of all fields to average
