@@ -375,6 +375,7 @@ if(do_combine)
                  tdif = sw_tdif(chi.S, chi.T, chi.depth);
                  kb = (chi.eps./(nu .* tdif.^2)).^(0.25)/2/pi;
                  ki = 0.01366*kb.*sqrt(tdif./nu);
+                 ki(chi.chi == 0) = nan;
                  [~, freq] = fast_psd(zeros(100,1) ,100/2, 100);
                  fmax = 14; % really 15, but use closest even number
                  f_start = 4 * chi.spd; % again closest even number
@@ -395,7 +396,7 @@ if(do_combine)
                      print(gcf, [basedir 'pics' filesep 'ic_fit_filtering.png'], '-r200', '-painters', '-bestfit')
                  end
 
-                 [chi, percentage] = ApplyMask(chi, ki < kstop, '=', 0, 'IC fit');
+                 [chi, percentage] = ApplyMask(chi,  kstop <= ki, '=', 1, 'IC fit');
                  chi.stats.IC_fit_mask_percentage = percentage;
                  perlabel = [' -' num2str(percentage, '%.1f') '%'];
                  if do_plot, Histograms(chi, hfig, normstr, (ID), ['remove IC fits' perlabel]); end
