@@ -211,7 +211,7 @@ for b=1:n_iterations
         end
     end
     f_range=freq(freq>f_start & freq<f_stop);
-    if numel(f_range)>0
+    if numel(f_range)>3
         stats.k_start=f_range(1)/fspd;
         stats.k_stop=f_range(end)/fspd;
         stats.f_start=f_range(1);
@@ -219,15 +219,14 @@ for b=1:n_iterations
         stats.n_freq=length(f_range);
         chi=6*tdif*integrate_new(min(b_freq),max(b_freq),b_freq,b_spec);
     else
-        % fit has failed. f_stop < f_start because chi, epsilon are tiny.
-        % likely that there is nothing happening!
+        % fit has failed.
         stats.k_start=NaN;
         stats.k_stop=NaN;
         stats.f_start=NaN;
         stats.f_stop=NaN;
         stats.n_freq=NaN;
         b_spec=NaN;
-        chi=0;
+        chi=NaN;
     end
 
     % Now estimate epsilon from chi:
