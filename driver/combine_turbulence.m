@@ -792,6 +792,7 @@ if(do_combine)
        system(['cp ' savedir '/Turb.mat ' savedir ...
                '../']);
    end
+   end
 end
 
 %_____________________comparison plot______________________
