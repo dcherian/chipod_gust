@@ -349,6 +349,40 @@ if(do_combine)
                      StratHist(hfstrat, chi.wda, 'ww');
                  end
                  disp('    =================================================================')
+
+                 % keyboard;
+                 % figure;
+                 % yyaxis left;
+                 % h1 = plot(chi.wda.time, -abs(chi.wda.Jq) .* sign(Tzi), ...
+                 %           'color', [1 1 1]*0.75, 'linewidth', 2);
+                 % hold on;
+                 % yyaxis left; ylabel('J_q (W/m^2)')
+                 % plot(chi.wda.time, chi.wda.Jq, '-')
+                 % yyaxis right;
+                 % ylabel('Tz_m')
+                 % plot(xlim, [0, 0], 'color', [1 1 1]*0.75, 'HandleVisibility', 'off')
+                 % plot(xlim, [1, 1]*CP.min_dTdz, 'color', [1 1 1]*0.75, 'HandleVisibility', 'off')
+                 % plot(xlim, [1, 1]*-CP.min_dTdz, 'color', [1 1 1]*0.75, 'HandleVisibility', 'off')
+                 % ax = gca;
+                 % plot(Tz_m.time, Tz_m.Tz, '-');
+                 % ax.YAxis(1).Limits =  [-1, 1]* 300;
+                 % ax.YAxis(2).Limits = [-1, 1]*1e-1/2;
+                 % legend('WDA Jq * sign(Tz_m)', 'WDA Jq * better sign', 'Tz_m')
+                 % ax.XAxis.TickLabelRotation=20;
+                 % xlim([datenum(2014, 01, 15), datenum(2014, 01, 18)])
+                 % datetick('x', 'dd/mm HH:MM', 'keeplimits')
+                 % xlim([datenum(2014, 02, 08), datenum(2014, 02, 15)])
+                 % datetick('x', 'dd/mm HH:MM', 'keeplimits')
+                 % xlim([datenum(2014, 10, 05), datenum(2014, 10, 14)])
+                 % datetick('x', 'dd/mm HH:MM', 'keeplimits')
+
+                 % figure;
+                 % plot(chi.wda.Jq .* sgn, Jqm, 'x')
+
+                 if isfield(chi.wda, 'no_min_dz')
+                     disp([num2str(sum(chi.wda.no_min_dz)/length(chi.wda.no_min_dz), '%.2f') ...
+                          '% of WDA estimates are NaN because the chipod wasn''t pumped enough.']);
+                 end
              end
 
              % dT/dz has to happen after I use chi to get Winters & D'Asaro
