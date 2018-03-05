@@ -570,6 +570,25 @@ if do_plot
 end
 end
 
+% figure;
+% histogram((Turb.mm1.wda.chi ./ abs(Turb.mm1.wda.dTdz) / 2 *  4200 * 1025) ./  ...
+%           abs(Turb.mm1.wda.Jq), 1000, 'normalization', 'pdf', ...
+%           'displayname', '(Jq ~ <\chi>/wda dTdz) / (WDA Jq accurate)');
+% hold on;
+% Tzm = Turb.mm1.dTdz;
+% Tzm(isnan(Turb.mm1.Jq)) = nan;
+% wda2 = (Turb.mm1.wda.Kt .* interp1(Turb.mm1.time(1:end-1), ...
+%                                    Tzm(1:end-1), ...
+%                                    Turb.mm1.wda.time) * 4200 * 1025);
+% histogram( wda2 ./ abs(Turb.mm1.wda.Jq), 6000, 'normalization', 'pdf', ...
+%            'displayname', '(Jq ~ wda Kt * Tz_{moor}) / (WDA Jq accurate)');
+% ylabel('PDF')
+% linex(1);
+% ylim([0 2]);
+% xlim([0 5]);
+% legend('-dynamiclegend');
+% export_fig ~/rama/images/wda-Jq-comparison.png
+
 function [CP] = process_estimate_ID(CP, ID)
 
     if CP.isChipod
