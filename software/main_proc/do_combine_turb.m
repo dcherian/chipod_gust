@@ -350,6 +350,14 @@ if(do_combine)
                  end
                  disp('    =================================================================')
 
+                 % plot(chi.wda.time, chi.wda.Jq)
+                 % xlim([datenum('2014-10-09'), datenum('2014-10-10')])
+                 % datetick('x', 'dd-mmm HH:MM', 'keeplimits')
+
+                 % load oct-09-wda.mat
+                 % figure; hold on;
+                 % plot(wda_proc.time, wda_proc.Jq)
+
                  % keyboard;
                  % figure;
                  % yyaxis left;
