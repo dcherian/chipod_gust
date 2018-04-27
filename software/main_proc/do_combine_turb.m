@@ -321,11 +321,6 @@ if(do_combine)
                      shown_Tz = [shown_Tz 'w'];
                      StratHist(hfstrat, chi.wda, 'ww');
                  end
-
-                 if isfield(chi.wda, 'no_min_dz')
-                     disp([num2str(sum(chi.wda.no_min_dz)/length(chi.wda.no_min_dz), '%.2f') ...
-                          '% of WDA estimates are NaN because the chipod wasn''t pumped enough.']);
-                 end
              end
 
              % dT/dz has to happen after I use chi to get Winters & D'Asaro
@@ -457,19 +452,25 @@ if(do_combine)
    end
 
    if do_plot
-       set(0, 'currentfigure', hfig2);
-       subplot(221); title(['Final ' num2str(CP.avgwindow/60) ' min mean']);
-       subplot(222); title(['Final ' num2str(CP.avgwindow/60) ' min mean']);
+       if exist('hfig2', 'var')
+          set(0, 'currentfigure', hfig2);
+          subplot(221); title(['Final ' num2str(CP.avgwindow/60) ' min mean']);
+          subplot(222); title(['Final ' num2str(CP.avgwindow/60) ' min mean']);
 
-       print(gcf,[basedir '/pics/histograms-final.png'],'-dpng','-r200','-painters')
-       if save_fig,set(gcf, 'visible', 'on'); savefig(gcf,[basedir '/pics/histograms-final.fig']); end
+          print(gcf,[basedir '/pics/histograms-final.png'],'-dpng','-r200','-painters')
+          if save_fig,set(gcf, 'visible', 'on'); savefig(gcf,[basedir '/pics/histograms-final.fig']); end
+       end
 
-       set(0, 'currentfigure', hfraw);
-       subplot(221); title(['raw 1s estimates']);
-       subplot(222); title(['raw 1s estimates']);
-       print(gcf,[basedir '/pics/histograms-raw.png'],'-dpng','-r200','-painters')
+       if exist('hfraw', 'var')
+          set(0, 'currentfigure', hfraw);
+          subplot(221); title(['raw 1s estimates']);
+          subplot(222); title(['raw 1s estimates']);
+          print(gcf,[basedir '/pics/histograms-raw.png'],'-dpng','-r200','-painters')
+       end
 
-       print(hfstrat,[basedir '/pics/histograms-stratification.png'],'-dpng','-r200','-painters')
+       if exist('hfstrat', 'var')
+          print(hfstrat,[basedir '/pics/histograms-stratification.png'],'-dpng','-r200','-painters')
+       end
 
        if exist('hspecfig', 'var')
            print(hspecfig, [basedir '/pics/histograms-noise-floor.png'],'-dpng','-r200','-painters')
