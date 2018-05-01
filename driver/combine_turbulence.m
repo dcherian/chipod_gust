@@ -64,7 +64,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    % Fill value for when instrument is at noise floor.
    % think about setting this to 0. NaN recovers previous behaviour
-   % CP.noise_floor_fill_value = nan;
+   CP.noise_floor_fill_value = 0;
 
    % mask out fits in the IC range with 1 sec data?
    % this tends to happen when dTdz -> 0.
