@@ -71,6 +71,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    % Removes a bunch of high values that are suspicious.
    CP.mask_ic_fits = 1;
 
+   CP.min_dTdz = 3e-3;
+
    CP.pflag.master.winters_dasaro = 1;
 
 
