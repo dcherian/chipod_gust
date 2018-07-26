@@ -69,7 +69,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    % mask out fits in the IC range with 1 sec data?
    % this tends to happen when dTdz -> 0.
    % Removes a bunch of high values that are suspicious.
-   % CP.mask_ic_fits = 1;
+   CP.mask_ic_fits = 1;
 
    CP.pflag.master.winters_dasaro = 1;
 
