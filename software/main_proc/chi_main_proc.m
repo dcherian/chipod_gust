@@ -213,6 +213,26 @@ for i = 1:length(pflag.id)
            if id([-1:0]+end) == 'ic'
                [chi] = chi_chi_proc_ic(T, S, Tz, pflag.master.ic_dt, pflag.master.ic_frange) ;
            else
+
+
+               % spectra for file
+               figure;
+               [T_power, freq] = fast_psd( T.T, 60*50, 50);
+               loglog(freq, freq.*T_power)
+               hold on;
+               [tp_power, freq] = fast_psd( Tp.tp, 60*50, 100);
+               loglog(freq, tp_power)
+               [a_power, freq] = fast_psd(data.AX, 60*50, 50);
+               loglog(freq, a_power)
+               [a_power, freq] = fast_psd(data.AY, 60*50, 50);
+               loglog(freq, a_power)
+               [a_power, freq] = fast_psd(data.AZ, 60*50, 50);
+               loglog(freq, a_power)
+               legend('T * f', 'Tp', 'ax', 'ay', 'az')
+               xlabel('freq (hz)')
+               title(datestr(T.time(1)))
+
+               keyboard;
                [chi, stats] = chi_chi_proc(Tp, S, Tz, T);
 
                % left for debugging purposes

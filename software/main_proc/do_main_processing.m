@@ -70,7 +70,7 @@ end
          % close parpool
          delete(gcp);
       else
-         for f=1:length(fids)
+          for f=120:length(fids)
              disp(['processing day ' num2str(f) ' of ' num2str(length(fids))]);
              try
                 filedate = datenum(fdate{f}(1:8), 'yymmddhh');
