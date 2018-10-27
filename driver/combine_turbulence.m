@@ -75,6 +75,8 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    CP.pflag.master.winters_dasaro = 1;
 
+   CP.max_Kt = 1e-2;  % removes 17 points; removes outliers in salt flux.
+
 
 %_____________________do everything______________________
 CP
