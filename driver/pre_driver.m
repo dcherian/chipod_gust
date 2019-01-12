@@ -41,7 +41,7 @@ close all;
 
 %_____________________ebob 2013 NRL mooring data__________
    NRLid = '3'; % which NRL mooring?
-   ebobctdname = ['../../../ancillary/ctd/NRL' NRLid '-corrected.mat'];
+   ebobctdname = ['../../../ancillary/ctd/NRL' NRLid 'SP-deglitched.mat'];
    ebobadcpname = ['../../../ancillary/adcp/NRL' NRLid '.mat'];
    buoydepth = 16;
 
@@ -232,7 +232,58 @@ if do_dTdz_m
 
           chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
                               T2.time, T2.z, T2.T, T2.S, sdir, ...
-                              use_TS_relation);
+                              0);
+          !cp ../input/dTdz_m.mat ../input/dTdz_unmodified.mat
+          n2nofix = load('../input/dTdz_unmodified.mat')
+          n2nofix = n2nofix.Tz_m
+
+          chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
+                              T2.time, T2.z, T2.T, T2.S, sdir, ...
+                              1);
+          !cp ../input/dTdz_m.mat ../input/dTdz_TSfit.mat
+          n2ts = load('../input/dTdz_TSfit.mat')
+          n2ts = n2ts.Tz_m
+
+          % 511 NRL3 modifications:
+          % prior to this time, lots of T inversions and S exists so lets use
+          % that
+
+          S2 = T2.S;
+          it0 = find_approx(T2.time, datenum('14-Mar-2014'))
+          it1 = find_approx(T2.time, datenum('29-Aug-2014'))
+          S2(1:it0) = S2(1:it0) + 0.0724;
+          dS = interp1(n2ts.time(120000:360000), ...
+                       n2ts.Sz(120000:360000), ...
+                       T1.time(it0:it1)) * 15;
+          dS(abs(dS) > 1.5) = nan;
+          S2(it0:it1) = T1.S(it0:it1) - dS;
+
+          chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
+                              T2.time, T2.z, T2.T, S2, sdir, ...
+                              0);
+          new = load('../input/dTdz_m.mat')
+          new = new.Tz_m
+
+          figure;
+          ax(1) = subplot(211);hold on;
+          plot(n2nofix.time, n2nofix.N2)
+          plot(n2ts.time, n2ts.N2);
+          plot(new.time, new.N2, 'k');
+          legend('unmodified', 'tsfit', 'merged')
+          title({'I think differences are due to estimating from potential' ...
+                 'density using reconstructed S'})
+          datetick
+          liney(0)
+          ax(2) = subplot(212); hold on;
+          plot(T1.time, T1.S)
+          plot(T1.time, T2.S)
+          plot(T1.time, S2)
+          legend('S1', 'S2', 'reconstructed S2')
+          linkaxes(ax, 'x')
+          savefig('../pics/n2-merging.fig')
+
+          T2.S = S2;
+          save([basedir filesep 'input' filesep 'dTdz_m.mat'], 'Tz_m')
 
           save([basedir filesep 'proc' filesep 'T_m.mat'], ...
                'T1', 'T2')

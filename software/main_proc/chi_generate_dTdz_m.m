@@ -107,10 +107,10 @@ picdir   =  [sdir '../pics/'];
        rho_0    = 1025;
        Tz_m.N2  = -g/rho_0*(D1-D2)/dz;
    else
-       [N2_1,Sz_1,~]  = cal_N2_from_TS(t1, T1,  S1, ones(size(S1))*abs(.5*(z1+z2)), time, Tz_m.Tz, 7200);
-       [N2_2,Sz_2,~]  = cal_N2_from_TS(t2, T2,  S2, ones(size(S1))*abs(.5*(z1+z2)), time, Tz_m.Tz, 7200);
-       Tz_m.N2 = (N2_1 + N2_2)/2;
-       Tz_m.Sz = (Sz_1 + Sz_2)/2;
+       [N2_1,Sz_1,~]  = cal_N2_from_TS(t1, T1,  S1, ones(size(S1)).*abs(.5*(z1+z2)), time, Tz_m.Tz, 3600*6);
+       [N2_2,Sz_2,~]  = cal_N2_from_TS(t2, T2,  S2, ones(size(S1)).*abs(.5*(z1+z2)), time, Tz_m.Tz, 3600*6);
+       Tz_m.N2 = nanmean([N2_1; N2_2], 1);
+       Tz_m.Sz = nanmean([Sz_1; Sz_2], 1);
    end
 
    Tz_m.time  = time;
