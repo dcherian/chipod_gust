@@ -45,36 +45,36 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
 
    %---------------------add manual flags----------------------
-    %pflag = pflag.c_T1(0);       % switch off T1 if bad
-    %pflag = pflag.c_T2(0);       % switch off T2 if bad
+   pflag = pflag.c_T1(1);       % switch off T1 if bad
+   pflag = pflag.c_T2(0);       % switch off T2 if bad
 
-    %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
-  
-    pflag = pflag.c_vel_p(0);    % use pitot velocities
-    %pflag = pflag.c_vel_m(0);    % use mooring velocities 
-    pflag = pflag.c_Tzi(0);      % use local (interal) stratification
-    %pflag = pflag.c_Tzm(0);      % use mooring stratification
+   %pflag.master.epsp = 1;       % switch on eps calculation from pitot (default on)
+   
+   pflag = pflag.c_vel_p(0);    % use pitot velocities
+                                %pflag = pflag.c_vel_m(0);    % use mooring velocities 
+   pflag = pflag.c_Tzi(0);      % use local (interal) stratification
+                                %pflag = pflag.c_Tzm(0);      % use mooring stratification
 
-    %pflag.master.pumped = 0;    % do you use a surface pumped mooring (default = 1)
+   %pflag.master.pumped = 0;    % do you use a surface pumped mooring (default = 1)
 
-    pflag.master.use_compass = 1; % if 0, assume chipod vane moves it
-                                  % into the flow perfectly
+   pflag.master.use_compass = 1; % if 0, assume chipod vane moves it
+                                 % into the flow perfectly
 
-    %pflag.master.use_pres = 0; % set to 0, accelerometers are
-                               % working, else differentiate
-                               % pressure to get speed past sensor
+   %pflag.master.use_pres = 0; % set to 0, accelerometers are
+   % working, else differentiate
+   % pressure to get speed past sensor
 
 
-  % IC-estimate
-    pflag = pflag.c_ic(1);      % switch on ic processing (default off)
-    %pflag = pflag.c_vc(0);      % switch off viscous convective processing (default on)
-    %pflag.master.ic_dt     = 600; % (in seconds) time window for ic-estimate 
-    %pflag.master.ic_frange =  [1/50 1/19]; % fiting range for ic-estimate
+   % IC-estimate
+   pflag = pflag.c_ic(1);      % switch on ic processing (default off)
+                               %pflag = pflag.c_vc(0);      % switch off viscous convective processing (default on)
+                               %pflag.master.ic_dt     = 600; % (in seconds) time window for ic-estimate 
+                               %pflag.master.ic_frange =  [1/50 1/19]; % fiting range for ic-estimate
 
-    pflag.master.parallel = 1; % 1 use default number of parallel workers
-                               % 0 serial processing
-                               % 2...n  use n number of parallel workers
-    pflag = pflag.make_cons();   % make sub-flags consitent with master flags
+   pflag.master.parallel = 0; % 1 use default number of parallel workers
+                              % 0 serial processing
+                              % 2...n  use n number of parallel workers
+   pflag = pflag.make_cons();   % make sub-flags consitent with master flags
 
    %---------------------get flag status----------------------
    pflag.status();

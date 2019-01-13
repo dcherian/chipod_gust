@@ -50,15 +50,15 @@ warning off
     q=7;
     n_iterations=5;
 
-%   doplots=0;
+    doplots=1;
     
     
-%% good indices
+    %% good indices
 
-good_inds=find(~isnan(tp_power));
-tp_power=tp_power(good_inds);
-freq=freq(good_inds);    
-if isempty(good_inds)
+    good_inds=find(~isnan(tp_power));
+    tp_power=tp_power(good_inds);
+    freq=freq(good_inds);    
+    if isempty(good_inds)
     freq(1)=0.001;
 end
 
@@ -72,7 +72,7 @@ spec_time=tp_power/fspd^2;% If tp_power is power of dT/dt, than our units are
 
 
 %% plot?
-%if doplots, figure(17),clf,cols='rbgmykbbbbbbbbbbbb';end
+if doplots, figure(17),clf,cols='rbgmykbbbbbbbbbbbb';end
 
 %% calculate chi and epsilon
 chi_out  =   nan(1,n_iterations);
@@ -241,16 +241,16 @@ for b=1:n_iterations
     spec_kraich=b_spec*fspd;% to convert from K/[m^2*Hz] to K/[m^2*cpm]
     spec=spec_time*fspd;% to convert from K/[m^2*Hz] to K/[m^2*cpm]
 
-%     if doplots
-%         loglog(k,spec,k_kraich,spec_kraich,cols(b))
-%         hold on;
-%         title(['chit=' num2str(chi(end)) ', epsilon=' num2str(epsil(end))])
-%         xlabel('k [cpm]');
-%         ylabel('spectrum [(K/m)^2/cpm]');
-%         ylim([.00000001 0.1])
-%         plot([stats.k_start stats.k_start],ylim,'k--')
-%         plot([stats.k_stop stats.k_stop],ylim,'k--')
-%     end
+    if doplots
+        loglog(k,spec,k_kraich,spec_kraich,cols(b))
+        hold on;
+        title(['chit=' num2str(chi(end)) ', epsilon=' num2str(epsil(end))])
+        xlabel('k [cpm]');
+        ylabel('spectrum [(K/m)^2/cpm]');
+        ylim([.00000001 0.1])
+        plot([stats.k_start stats.k_start],ylim,'k--')
+        plot([stats.k_stop stats.k_stop],ylim,'k--')
+    end
 end
 
 chi=fliplr(chi_out);

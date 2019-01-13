@@ -7,8 +7,8 @@
 %        Wed Aug 16 16:01:26 PDT 2017
 
 
-do_parallel = 1;     % use paralelle computing
-do_raw_proc = 1;     % do the raw data processing
+do_parallel = 0;     % use paralelle computing
+do_raw_proc = 0;     % do the raw data processing
 do_plot     = 1;     % generate a over view plot
 
 dtind = 600; % every 10 minutes, assuming 1 second estimates

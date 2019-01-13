@@ -10,7 +10,7 @@ close all;
 
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
-   do_vel_m    = 1;     % generate vel_m.mat
+   do_vel_m    = 0;     % generate vel_m.mat
    do_dTdz_m   = 1;     % generate dTdz_m.mat
    use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
    use_mooring_sal = 0; % use mooring salinity along with dTdz_i
@@ -21,7 +21,7 @@ close all;
                         % have only 1 salinity sensor
    use_old_moor_file = 0;   % use mooring file from an older deployment with
                             % pre-calculated velocity, dTdz and N2
-   modify_header = 1;   % if 1, specify header corrections below
+   modify_header = 0;   % if 1, specify header corrections below
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
@@ -67,7 +67,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    rawdir       = [basedir filesep 'raw' filesep]; % raw files location
 
 %_____________________get list of all raw data______________________
-   [fids, fdate] = chi_find_rawfiles(basedir);
+% [fids, fdate] = chi_find_rawfiles(basedir);
 
 %_____________________make header corrections if necessary______________
 

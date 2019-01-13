@@ -17,7 +17,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    save_fig    =  0; % save .fig files?
    is_visible  =  'on'; % shall the figures be displayed
 
-%_____________________set directories______________________    
+   %_____________________set directories______________________    
    here    =   pwd;                % mfiles folder
    basedir =   here(1:(end-6));    % substract the mfile folder
    savedir =   [basedir 'proc/'];  % directory directory to save data
@@ -73,7 +73,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 
    CP.min_dTdz = 3e-3;
 
-   CP.pflag.master.winters_dasaro = 1;
+   CP.pflag.master.winters_dasaro = 0;
 
 
 %_____________________do everything______________________

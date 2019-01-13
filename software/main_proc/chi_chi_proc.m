@@ -141,9 +141,12 @@ thermistor_cutoff_frequency  = 32;
 
           chi.spec_area(i) = trapz(freq, tp_power);
 
+          if i == 43200;
+              keyboard;
+          end
           % fit spectrum
           [chi_tmp, eps_tmp , k,spec, k_kraich, spec_kraich, stats{i}] =...
-                  get_chipod_chi_new( freq, tp_power, chi.spd(i), nu(i), tdif(i), chi.dTdz(i), chi.N2(i)); 
+              get_chipod_chi_new( freq, tp_power, chi.spd(i), nu(i), tdif(i), chi.dTdz(i), chi.N2(i)); 
 
           chi.chi(i) = chi_tmp(1);
           chi.eps(i) = eps_tmp(1);
@@ -164,19 +167,19 @@ thermistor_cutoff_frequency  = 32;
    stats.time = chi.time;
 
    % useful debugging plot
-   % figure;
-   % ax(1) = subplot(311)
-   % plot(T.time, T.T)
-   % ylabel('T')
-   % datetick;ax(2) = subplot(312)
-   % plot(Tp.time, Tp.tp)
-   % ylabel('Tp')
-   % datetick;
-   % ax(3) = subplot(313)
-   % semilogy(chi.time, chi.chi)
-   % hold on;
-   % semilogy(chi.time, chi.eps)
-   % legend('\chi', '\epsilon')
-   % datetick;
-   % linkaxes(ax, 'x')
-   % keyboard
+   figure;
+   ax(1) = subplot(311)
+   plot(T.time, T.T)
+   ylabel('T')
+   datetick;ax(2) = subplot(312)
+   plot(Tp.time, Tp.tp)
+   ylabel('Tp')
+   datetick;
+   ax(3) = subplot(313)
+   semilogy(chi.time, chi.chi)
+   hold on;
+   semilogy(chi.time, chi.eps)
+   legend('\chi', '\epsilon')
+   datetick;
+   linkaxes(ax, 'x')
+   keyboard
