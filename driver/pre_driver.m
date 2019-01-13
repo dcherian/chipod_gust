@@ -261,6 +261,11 @@ if do_dTdz_m
           chi_generate_dTdz_m(T1.time, T1.z, T1.T, T1.S, ...
                               T2.time, T2.z, T2.T, S2, sdir, ...
                               0);
+
+          T2.S = S2;
+          save([basedir filesep 'proc' filesep 'T_m.mat'], ...
+               'T1', 'T2')
+
           new = load('../input/dTdz_m.mat')
           new = new.Tz_m
 
@@ -282,11 +287,6 @@ if do_dTdz_m
           linkaxes(ax, 'x')
           savefig('../pics/n2-merging.fig')
 
-          T2.S = S2;
-          save([basedir filesep 'input' filesep 'dTdz_m.mat'], 'Tz_m')
-
-          save([basedir filesep 'proc' filesep 'T_m.mat'], ...
-               'T1', 'T2')
       end
       %__________________recalculate N^2 using processed mooring salinity____________________
 
