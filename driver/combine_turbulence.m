@@ -42,7 +42,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
       %CP.adcpdeath         = datenum(2000, 1, 1, 0, 0, 0);
       %CP.nantimes{1}       = []; % sensor T1 for chipod or T sensor on gusT
       CP.nantimes{2}       = [
-          datenum('04-Feb-2014 02:30'), datenum('11-Jun-2014 00:45');
+          datenum('04-Feb-2014 02:30'), datenum('11-Jun-2014 00:45'); % jellyfish?
                    ]; % sensor T2 for chipod
 
       %CP.nantimes{3}       = []; % pitot sensor
