@@ -557,6 +557,9 @@ function [chi] = add_nans(CP, chi)
            chi.chi(death:end) = NaN;
            chi.eps(death:end) = NaN;
            chi.T(death:end) = NaN;
+           if isfield(chi, 'spec_area')
+               chi.spec_area(death:end) = NaN;
+           end
        end
        if isfield(chi, 'time_floor')
            deathf = find(chi.time_floor > CP.T1death, 1, 'first');
@@ -574,6 +577,9 @@ function [chi] = add_nans(CP, chi)
                chi.chi(death:end) = NaN;
                chi.eps(death:end) = NaN;
                chi.T(death:end) = NaN;
+               if isfield(chi, 'spec_area')
+                   chi.spec_area(death:end) = NaN;
+               end
            end
        end
        if isfield(chi, 'time_floor')
