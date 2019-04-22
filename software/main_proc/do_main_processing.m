@@ -70,7 +70,7 @@ end
          % close parpool
          delete(gcp);
       else
-         for f=1:length(fids)
+         for f=190
              disp(['processing day ' num2str(f) ' of ' num2str(length(fids))]);
              try
                 filedate = datenum(fdate{f}(1:8), 'yymmddhh');
@@ -78,8 +78,8 @@ end
                       chi_main_proc(basedir, fids{f}, pflag);
                  end
              catch ME
-                 disp(['!!!!!! ' fids{f} ' (f = ' num2str(f) ') crashed while ' ...
-                       'processing  !!!!!! \n\n' ME.message]);
+                 disp(sprintf(['!!!!!! ' fids{f} ' (f = ' num2str(f) ') crashed while ' ...
+                               'processing  !!!!!! \n\nError: ' ME.message]));
              end
          end
       end
