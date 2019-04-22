@@ -553,6 +553,11 @@ if(do_combine)
          
          % include statistics (means and medians for each quantity)
          Turb.(ID) = calc_statistics(Turb.(ID));
+
+         Turb.(ID).stats.readme = ['percentage of total 1 sec points NaN-ed out by a ' ...
+                                   'particular mask'];
+         Turb.(ID).masks.readme = 'Number of 1 sec points NaN-ed out by a particular mask';
+
       end
    end
 
@@ -599,10 +604,6 @@ if(do_combine)
            print(hweakfig, [basedir '/pics/buoyancy-reynolds.png'], ...
                  '-dpng', '-r200', '-painters')
        end
-
-       Turb.(ID).stats.readme = ['percentage of total 1 sec points NaN-ed out by a ' ...
-                                 'particular mask'];
-       Turb.(ID).masks.readme = 'Number of 1 sec points NaN-ed out by a particular mask';
    end
 
    Turb.hash = githash(['driver' filesep 'combine_turbulence.m']);
