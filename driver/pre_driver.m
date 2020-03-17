@@ -9,8 +9,8 @@ close all;
 
 
 %_____________________set processing flags______________________
-   do_parallel = 0;     % use paralelle computing 
-   do_vel_m    = 0;     % generate vel_m.mat
+   do_parallel = 1;     % use paralelle computing
+   do_vel_m    = 1;     % generate vel_m.mat
    do_dTdz_m   = 1;     % generate dTdz_m.mat
    use_pmel    = 1;     % use TAO/TRITON/PIRATA/RAMA mooring data?
    use_mooring_sal = 1; % use mooring salinity along with dTdz_i
@@ -25,7 +25,7 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 18.9; % exact value from calibration file
                         % (no sign changes!)
    DeployDecl = -0.9; % at deployment location
    CorvallisDecl = 15+1/60; % at corvallis
@@ -84,6 +84,10 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         % chi_calibrate_chipod adds head.coef.CMP(1) to raw_data.CMP/10
         % hence, we need to change sign here.
         head.coef.CMP(1) = -CompassOffset - CorvallisDecl + DeployDecl;
+
+        % fix Tp coefs
+	head.coef.T1P(2) = 0.09053;
+        head.coef.T2P(2) = 0.08952;
 
         % save header in proper destination
         fid = [basedir filesep 'calib' filesep 'header.mat'] ;
