@@ -38,7 +38,7 @@ in=[fin in  bin];
 
 pf = filtfilt(b, a, in);
 nsmooth = round(0.5/dt); % smooth over 1/2 sec (bit noise)
-vel = filtfilt(b,a,smooth(diff(pf,1), nsmooth)/dt);
+vel = filtfilt(b,a,movmean(diff(pf,1), nsmooth)/dt);
 disp = filtfilt(b,a,cumtrapz(vel) * dt);
 
 vel = vel(flipsize-1:flipsize+len-2);
