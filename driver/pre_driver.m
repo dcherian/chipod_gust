@@ -11,9 +11,9 @@ close all;
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
    do_vel_m    = 0;     % generate vel_m.mat
-   do_dTdz_m   = 0;     % generate dTdz_m.mat
-   use_pmel    = 0;     % use TAO/TRITON/PIRATA/RAMA mooring data?
-   use_mooring_sal = 0; % use mooring salinity along with dTdz_i
+   do_dTdz_m   = 1;     % generate dTdz_m.mat
+   use_pmel    = 1;     % use TAO/TRITON/PIRATA/RAMA mooring data?
+   use_mooring_sal = 1; % use mooring salinity along with dTdz_i
                         % to estimate N^2 in dTdz_i.
                         % otherwise code assumes fixed salinity=35.
    use_TS_relation = 0; % fit TS relation to estimate N2 from
@@ -27,11 +27,11 @@ close all;
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
    CompassOffset = NaN; % exact value from calibration file
                         % (no sign changes!)
-   DeployDecl = 0; % at deployment location
-   CorvallisDecl = 15+44/60; % at corvallis
+   DeployDecl = -0.9; % at deployment location
+   CorvallisDecl = 15+1/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 90; ChipodLat = 12; ChipodDepth = 15;
+   ChipodLon = 90; ChipodLat = 15; ChipodDepth = 30;
 
    % name of old mooring file
    if use_old_moor_file
@@ -40,7 +40,7 @@ close all;
    end
 
    %_____________________RAMA preliminary data____________
-   use_rama    = 1     % use prelim processed RAMA data
+   use_rama    = 0     % use prelim processed RAMA data
    if use_rama
        ramaname = '~/rama/RamaPrelimProcessed/RAMA13-corrected.mat';
    end
@@ -113,7 +113,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
        % 2m/10m/30m/hr
        velfreq = '30m';
        Tfreq = '10m';
-       Sfreq = 'dy';
+       Sfreq = 'hr';
 
        % find start and end of depoyment from raw files
        data = raw_load_chipod([rawdir fids{1}]);
