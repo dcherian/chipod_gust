@@ -36,45 +36,43 @@ function [W] = pitot_choose_W(rdat)
 % received the warning message about the code choosing WP instead of W,
 % please uncomment line 40 (W  = rdat.W;) and comment out everything below.
 
-% W  = rdat.W;
+W  = rdat.W;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if isfield(rdat, 'W')
+% if isfield(rdat, 'W')
     
-    % Case using pitot circuit boards newer than 2018 where WP is near
-    % zero. Always want to use W, not WP, as the pitot voltage.
-    if nanmean(rdat.WP) < 10^-3
-        W  = rdat.W;
+%     % Case using pitot circuit boards newer than 2018 where WP is near
+%     % zero. Always want to use W, not WP, as the pitot voltage.
+%     if nanmean(rdat.WP) < 10^-3
+%         W  = rdat.W;
         
-    % case using older pitot circuit boards where the average of WP is
-    % close to 2.02. Code leaves room to choose WP in the SUPER
-    % RARE cases where the wires to WP and W were switched (circa 2015).
-    else
+%     % case using older pitot circuit boards where the average of WP is
+%     % close to 2.02. Code leaves room to choose WP in the SUPER
+%     % RARE cases where the wires to WP and W were switched (circa 2015).
+%     else
     
-        dV1 = abs(nanmean(rdat.W)-2.02);
-        dV2 = abs(nanmean(rdat.WP)-2.02);
-        if dV1>dV2
-            W  = rdat.W;
-        else
-            W  = rdat.WP;
-            disp({'*** WARNING *** pitot_choose_W.m is choosing WP instead';...
-                'of W as the pitot voltage. This is only the correct choice in ';...
-                'VERY RARE INSANCES (mostly around 2015). Likely, you should';...
-                'hard-wire the code to always choose W as the pitot voltage in:';...
-                'chipod_gust/software/pitot/pitot_choose_W.m'})
-        end
-    end
+%         dV1 = abs(nanmean(rdat.W)-2.02);
+%         dV2 = abs(nanmean(rdat.WP)-2.02);
+%         if dV1>dV2
+%             W  = rdat.W;
+%         else
+%             W  = rdat.WP;
+%             disp({'*** WARNING *** pitot_choose_W.m is choosing WP instead';...
+%                 'of W as the pitot voltage. This is only the correct choice in ';...
+%                 'VERY RARE INSANCES (mostly around 2015). Likely, you should';...
+%                 'hard-wire the code to always choose W as the pitot voltage in:';...
+%                 'chipod_gust/software/pitot/pitot_choose_W.m'})
+%         end
+%     end
     
-% Very very old case (circa Dynamo) where W and WP were saved as W2 and W3.  
-else
-	dV1 = abs(nanmean(rdat.W2)-2.02);
-	dV2 = abs(nanmean(rdat.W3)-2.02);
-	if dV1>dV2
-        W  = rdat.W2;
-	else
-        W  = rdat.W3;
-	end
-end
-
-
+% % Very very old case (circa Dynamo) where W and WP were saved as W2 and W3.
+% else
+% 	dV1 = abs(nanmean(rdat.W2)-2.02);
+% 	dV2 = abs(nanmean(rdat.W3)-2.02);
+% 	if dV1>dV2
+%         W  = rdat.W2;
+% 	else
+%         W  = rdat.W3;
+% 	end
+% end
