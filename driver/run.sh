@@ -17,5 +17,6 @@ then
    nohup matlab.2017a -nodisplay -nosplash -r $s > ./out/out_$s & echo $! > ./out/pid_$s
 
 else
+   module load matlab
    nohup matlab -nodisplay -nosplash -r $s > ./out/out_$s & echo $! > ./out/pid_$s
 fi
