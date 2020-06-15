@@ -8,7 +8,7 @@
 
 
 do_parallel = 1;     % use paralelle computing
-do_raw_proc = 1;     % do the raw data processing
+do_raw_proc = 0;     % do the raw data processing
 do_plot     = 1;     % generate a over view plot
 
 dtind = 600; % every 10 minutes, assuming 1 second estimates
@@ -26,7 +26,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
    basedir =   here(1:(end-6));    % substract the mfile folder
    savedir =   [basedir 'proc/'];  % directory directory to save data
    unit    = chi_get_unit_name(basedir); % get unit name
-   rawdir       = [basedir filesep 'raw' filesep]; % raw files location
+   rawdir  = [basedir filesep 'raw' filesep]; % raw files location
 
 % get time limits from whoAmI;
    [TL] =   whoAmI_timeLimits(basedir);

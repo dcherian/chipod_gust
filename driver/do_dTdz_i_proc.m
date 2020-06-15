@@ -47,11 +47,12 @@ if do_proc
         % init parallel pool
         if(do_parallel)
 
+ 	  cluster = parcluster()
             % open the parallel pool
             if do_parallel == 1
-               parpool;
+               parpool(cluster);
             else
-               parpool(do_parallel);
+	      parpool(cluster, do_parallel);
             end
 
             % parallel for-loop

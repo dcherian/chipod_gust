@@ -10,7 +10,7 @@ close all;
 
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
-   do_vel_m    = 0;     % generate vel_m.mat
+   do_vel_m    = 1;     % generate vel_m.mat
    do_dTdz_m   = 1;     % generate dTdz_m.mat
    use_pmel    = 1;     % use TAO/TRITON/PIRATA/RAMA mooring data?
    use_mooring_sal = 1; % use mooring salinity along with dTdz_i
@@ -25,13 +25,13 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 0.5; % exact value from calibration file
                         % (no sign changes!)
    DeployDecl = -0.9; % at deployment location
    CorvallisDecl = 15+1/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 90; ChipodLat = 15; ChipodDepth = 30;
+   ChipodLon = 90; ChipodLat = 15; ChipodDepth = 45;
 
    % name of old mooring file
    if use_old_moor_file
@@ -84,6 +84,13 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         % chi_calibrate_chipod adds head.coef.CMP(1) to raw_data.CMP/10
         % hence, we need to change sign here.
         head.coef.CMP(1) = -CompassOffset - CorvallisDecl + DeployDecl;
+
+        head.coef.AX = [5.2291 -3.09598 0 0 0];
+        head.coef.AY = [-4.91781 3.04414 0 0 0];
+        head.coef.AZ = [5.01534 -3.06748 0 0 0];
+
+        head.coef.T1P(2) = 0.088417;
+        head.coef.T2P(2) = 0.087064;
 
         % save header in proper destination
         fid = [basedir filesep 'calib' filesep 'header.mat'] ;
@@ -141,7 +148,7 @@ if do_vel_m
 
 
         % mat = load(../../../mooring/15n90e-ADCP/SENT_9842.mat)
-        filename = "/glade/scratch/dcherian/rama18/adcp_chipod_depths.nc";
+        filename = "/glade/scratch/dcherian/rama18/adcp_chipod_depths.nc"
         moor.depth = ncread(filename, "depth");
         % units: minutes since 2018-05-29 08:07:13
         moor.time = datenum("2018-05-29 08:07:13") + double(ncread(filename, "time"))/60/24;
