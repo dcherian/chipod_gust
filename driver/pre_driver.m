@@ -44,7 +44,7 @@ close all;
    if use_rama
        ramaname = '~/rama/RamaPrelimProcessed/RAMA13-corrected.mat';
    end
-
+   use_adcp = 1 % use RAMA 18 ADCP
 
 %_____________________include path of processing flies______________________
 addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
@@ -126,7 +126,7 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
 if do_vel_m
     sdir  = [basedir filesep 'input' filesep];
 
-    if use_pmel | use_rama
+    if ~use_adcp & use_pmel | use_rama
         moor = ExtractUVFromTaoTritonPirataRama(ChipodLon, ChipodLat, ...
                                                 ChipodDepth, deployStart, ...
                                                 deployEnd, pmeldir, ...
@@ -137,10 +137,30 @@ if do_vel_m
         load(moorname);
     end
 
+    if use_adcp > 0
+
+
+        % mat = load(../../../mooring/15n90e-ADCP/SENT_9842.mat)
+        filename = "/glade/scratch/dcherian/rama18/adcp_chipod_depths.nc";
+        moor.depth = ncread(filename, "depth");
+        % units: minutes since 2018-05-29 08:07:13
+        moor.time = datenum("2018-05-29 08:07:13") + double(ncread(filename, "time"))/60/24;
+        [~, idx] = min(abs(moor.depth - 30));
+        moor.u = ncread(filename, "u");
+        moor.v = ncread(filename, "v");
+
+        moor.u = moor.u(:,idx);
+        moor.v = moor.v(:,idx);
+        moor.depth = moor.depth(idx);
+
+    end
+
     %_______ EXAMPLE________________
     % load('../../../mooring_data/mooring_Pirata14_524.mat') ;
 
-    generate_vel_m(moor.time, moor.depth, moor.u, moor.v, ChipodDepth, sdir);
+    % specify ChipodDepth as mooring depth to override interpolation
+    % i've already extracted appropriate time series at chipod depths
+    generate_vel_m(moor.time, ChipodDepth, moor.u, moor.v, ChipodDepth, sdir);
 end
 
 
