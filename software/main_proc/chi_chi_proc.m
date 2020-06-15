@@ -35,7 +35,7 @@ function [chi, stats] = chi_chi_proc(Tp, S, Tz, T)
 
 %_____________________default values______________________
 
-
+ticstart = tic;
 if ~isfield(T, 'S') 
    T.S = ones(size([T.T]))*35;
 end
@@ -129,7 +129,7 @@ thermistor_cutoff_frequency  = 32;
    %-------loop through all 1 sec seqments---------------
    for i = 1:Ni
 
-      if chi.mask(i)  % check if calculation should be executed 
+      if chi.mask(i)  % check if calculation should be executed
 
           % calculate psd of dT/dt 
           [tp_power, freq] = fast_psd( Tp.tp(I{i}) ,nfft, samplerate);
@@ -141,7 +141,7 @@ thermistor_cutoff_frequency  = 32;
 
           chi.spec_area(i) = trapz(freq, tp_power);
 
-          % fit spectrum
+          % fit spectrum3
           [chi_tmp, eps_tmp , k,spec, k_kraich, spec_kraich, stats{i}] =...
                   get_chipod_chi_new( freq, tp_power, chi.spd(i), nu(i), tdif(i), chi.dTdz(i), chi.N2(i)); 
 
@@ -180,3 +180,6 @@ thermistor_cutoff_frequency  = 32;
    % datetick;
    % linkaxes(ax, 'x')
    % keyboard
+
+   disp("finished a file")
+   toc(ticstart)
