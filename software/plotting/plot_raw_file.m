@@ -7,12 +7,17 @@ function plot_raw_file(fid)
     [data, ~] = raw_load_chipod(fid);
     cal = chi_calibrate_chipod(data, head)
 
+    rawdate = data.datenum(1:2:end);
+    idx = min([length(rawdate) length(data.T1) length(data.T2)]);
+
+    datestr(rawdate(1))
+    datestr(cal.time(1))
     CreateFigure;
     [ax, ~] = create_axes(gcf(), 4, 1, 0);
 
     axes(ax(1)); hold on
-    plot(data.datenum(1:2:end), data.T1)
-    plot(data.datenum(1:2:end), data.T2)
+    plot(rawdate(1:idx), data.T1(1:idx))
+    plot(rawdate(1:idx), data.T2(1:idx))
     legend('T1', 'T2')
     ylabel('T [Volts]')
 
