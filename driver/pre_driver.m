@@ -10,10 +10,10 @@ close all;
 
 %_____________________set processing flags______________________
    do_parallel = 0;     % use paralelle computing 
-   do_vel_m    = 0;     % generate vel_m.mat
+   do_vel_m    = 1;     % generate vel_m.mat
    do_dTdz_m   = 1;     % generate dTdz_m.mat
    use_pmel    = 1;     % use TAO/TRITON/PIRATA/RAMA mooring data?
-   use_mooring_sal = 1; % use mooring salinity along with dTdz_i
+   use_mooring_sal = 0; % use mooring salinity along with dTdz_i
                         % to estimate N^2 in dTdz_i.
                         % otherwise code assumes fixed salinity=35.
    use_TS_relation = 0; % fit TS relation to estimate N2 from
@@ -25,13 +25,13 @@ close all;
                         % (e.g. declination)
 
    % declination - get values from https://www.ngdc.noaa.gov/geomag-web/#declination
-   CompassOffset = NaN; % exact value from calibration file
+   CompassOffset = 2.6; % exact value from calibration file
                         % (no sign changes!)
    DeployDecl = -0.9; % at deployment location
    CorvallisDecl = 15+1/60; % at corvallis
 
    % chipod location (positive North, East & Down)
-   ChipodLon = 90; ChipodLat = 15; ChipodDepth = 30;
+   ChipodLon = 90; ChipodLat = 15; ChipodDepth = 55;
 
    % name of old mooring file
    if use_old_moor_file
@@ -85,6 +85,9 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
         % hence, we need to change sign here.
         head.coef.CMP(1) = -CompassOffset - CorvallisDecl + DeployDecl;
 
+        head.coef.T1P = [1 0.089302 0 0 0];
+        head.coef.T2P = [1 0.089773 0 0 0];
+
         % save header in proper destination
         fid = [basedir filesep 'calib' filesep 'header.mat'] ;
         save(fid, 'head');
@@ -115,11 +118,14 @@ addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routi
        Tfreq = '10m';
        Sfreq = 'hr';
 
+       [TL] =   whoAmI_timeLimits(basedir);
+       time_range      = TL.master;
+
        % find start and end of depoyment from raw files
        data = raw_load_chipod([rawdir fids{1}]);
-       deployStart = data.datenum(1);
+       deployStart = time_range(1);
        data = raw_load_chipod([rawdir fids{end}]);
-       deployEnd = data.datenum(end);
+       deployEnd = time_range(end);
    end
 
 %%%%%%%%%%%%%%%%%%% mooring velocity %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55

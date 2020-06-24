@@ -15,7 +15,7 @@ do_plot     = 1;  % do you want to generate graphical output
 dt          = 60;    % sec bits of data for analysis
 do_P        = 0;     % use pressure instead of acceleration to get z 
 min_dz      = 0.1;   % minimum displacement
-ChipodDepth = 29;    % depth of chipod (only used by code if pressure is bad)
+ChipodDepth = 55;;    % depth of chipod (only used by code if pressure is bad)
 
 % winters d'asaro options
 wda_params.do_winters_dasaro = 1; % do sorted gradient required for WDA estimate?
