@@ -1,3 +1,13 @@
+addpath(genpath('./chipod_gust/software/'));% include  path to preocessing routines
+
+
+%____________________set directories______________________
+   here    =   pwd;                % mfiles folder
+   basedir =   here(1:(end-6));    % substract the mfile folder
+   savedir =   [basedir 'proc/'];  % directory directory to save data
+   unit    = chi_get_unit_name(basedir); % get unit name
+   rawdir       = [basedir filesep 'raw' filesep]; % raw files location
+
 % will create header.mat file if necessary
 % if header.mat exists, it will read it
 head = chi_get_calibration_coefs(basedir);
