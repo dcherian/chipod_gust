@@ -145,7 +145,9 @@ if do_vel_m
         moor.depth = ncread(filename, "depth");
         % units: minutes since 2018-05-29 08:07:13
         moor.time = datenum("2018-05-29 08:07:13") + double(ncread(filename, "time"))/60/24;
-        [~, idx] = min(abs(moor.depth - 30));
+        [~, idx] = min(abs(moor.depth - ChipodDepth));
+        disp(["Choosing ADCP at depth: " num2str(moor.depth(idx))])
+
         moor.u = ncread(filename, "u");
         moor.v = ncread(filename, "v");
 
