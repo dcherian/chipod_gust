@@ -1,7 +1,8 @@
 function [T1, T2] = ExtractTSFromTaoTritonPirataRama(ChipodLon, ChipodLat, ChipodDepth, ...
                                                      deployStart, deployEnd, ...
                                                      datadir,  ...
-                                                     arrayName, Tres, Sres)
+                                                     arrayName, Tres, Sres, ...
+                                                     depth1, depth2)
 % This function extracts data from TAO/TRITON/RAMA/PIRATA moorings.
 % Given depth of chipod it'll extract T,S from nearest two depths above &
 % below the chipod.
@@ -41,8 +42,17 @@ function [T1, T2] = ExtractTSFromTaoTritonPirataRama(ChipodLon, ChipodLat, Chipo
         Sfull = Sfull(:,:,ilat,ilon)';
     end
 
-    [indexT1, indexT2] = ChooseDepthLevels(Tfull(:,:), Tdepth, ChipodDepth);
-    [indexS1, indexS2] = ChooseDepthLevels(Sfull(:,:), Sdepth, ChipodDepth);
+    if depth1 == -1 & depth2 == -1
+        [indexT1, indexT2] = ChooseDepthLevels(Tfull(:,:), Tdepth, ChipodDepth);
+        [indexS1, indexS2] = ChooseDepthLevels(Sfull(:,:), Sdepth, ChipodDepth);
+    else
+        % instrument depths are manually provided
+        indexT1 = find(Tdepth == depth1, 1)
+        indexT2 = find(Tdepth == depth2, 1)
+
+        indexS1 = find(Sdepth == depth1, 1)
+        indexS2 = find(Sdepth == depth2, 1)
+    end
 
     if Sdepth(indexS1) ~= Tdepth(indexT1)
         warning('Upper salinity not at same depth as temperature!');
@@ -102,7 +112,7 @@ function [index1, index2] = ChooseDepthLevels(var, depth, ChipodDepth)
                     & (ChipodDepth > depth));
     index1 = ChooseLeastNans(var, index1);
 
-    index2 = find( (abs(-depth + ChipodDepth) <= 10) ...
+    index2 = find( (abs(-depth + ChipodDepth) <= 15) ...
                     & (ChipodDepth < depth));
     index2 = ChooseLeastNans(var, index2);
 

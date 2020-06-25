@@ -171,10 +171,16 @@ if do_dTdz_m
       sdir  = [basedir filesep 'input' filesep];
 
       if use_pmel
+          % Avoid the T sensor at 80m
+          % Use TC sensors at 60m, 100m
+          depth1 = 60
+          depth2 = 100
+
           [T1, T2] = ExtractTSFromTaoTritonPirataRama(ChipodLon, ChipodLat, ...
                                                       ChipodDepth, deployStart, ...
                                                       deployEnd, pmeldir, 'RAMA', ...
-                                                      Tfreq, Sfreq);
+                                                      Tfreq, Sfreq, ...
+                                                      depth1, depth2);
       end
 
       if use_rama
